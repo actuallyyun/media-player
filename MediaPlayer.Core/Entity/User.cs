@@ -12,12 +12,16 @@ namespace MediaPlayer.Core.Entity
 
         public HashSet<PlayList> _playlists;
 
+        public DateTime CreatedAt;
+        public DateTime LastUpdatedAt;
+
         public User(string username, string email, string fullName)
         {
             Username = username;
             Email = email;
             FullName = fullName;
             Id=Guid.NewGuid();
+            CreatedAt=DateTime.Now;
         }
 
         public PlayList CreateNewPlaylist(string name)

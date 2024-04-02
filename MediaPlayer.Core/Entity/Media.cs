@@ -7,12 +7,16 @@ namespace MediaPlayer.Core.Entity
         public int Year { get; set; }
 
         public int Id;
+              public DateTime CreatedAt;
+        public DateTime LastUpdatedAt;
+
         public Media(string title, string artist, int year)
         {
             Title = title;
             Artist = artist;
             Year = year;
             Id++;
+            CreatedAt=DateTime.Now;
         }
     }
 }
