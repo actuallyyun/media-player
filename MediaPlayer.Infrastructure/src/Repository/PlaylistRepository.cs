@@ -6,13 +6,13 @@ namespace MediaPlayer.Infrastructure.src.Repository
 {
     public class PlaylistRepository : IPlaylistRepository
     {
-       
         private HashSet<PlayList> _playlists;
 
         public PlaylistRepository(Database database)
         {
             _playlists = database._playlists;
         }
+
         public void AddPlaylist(PlayList playlist)
         {
             _playlists.Add(playlist);
@@ -20,7 +20,7 @@ namespace MediaPlayer.Infrastructure.src.Repository
 
         public IEnumerable<PlayList> GetAllPublicPlaylists()
         {
-            return _playlists.Where(p=>p.IsPrivate ==false).ToList();
+            return _playlists.Where(p => p.IsPrivate == false).ToList();
         }
 
         public IEnumerable<PlayList>? GetPlaylistByName(string name)
@@ -28,11 +28,14 @@ namespace MediaPlayer.Infrastructure.src.Repository
             throw new NotImplementedException();
         }
 
-        
+        public PlayList? GetPlayListById(Guid id)
+        {
+            return _playlists.FirstOrDefault(p => p.Id == id);
+        }
 
         public HashSet<PlayList> GetPlayListsByOwnerId(Guid id)
         {
-            return _playlists.Where(p=>p.OwnerId==id).ToHashSet();
+            return _playlists.Where(p => p.OwnerId == id).ToHashSet();
         }
 
         public void RemovePlaylistById(Guid id)
