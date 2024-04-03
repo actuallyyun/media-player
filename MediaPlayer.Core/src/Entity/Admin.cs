@@ -1,6 +1,6 @@
-using MediaPlayer.Core.EntityAbstraction;
+using MediaPlayer.Core.src.EntityAbstraction;
 
-namespace MediaPlayer.Core.Entity
+namespace MediaPlayer.Core.src.Entity
 {
     public class Admin : User,IAdminAction
     {

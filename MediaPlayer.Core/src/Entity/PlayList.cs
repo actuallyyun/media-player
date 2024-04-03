@@ -1,4 +1,4 @@
-namespace MediaPlayer.Core.Entity
+namespace MediaPlayer.Core.src.Entity
 {
     public class PlayList
     {

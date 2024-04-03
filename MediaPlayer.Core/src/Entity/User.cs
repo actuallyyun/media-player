@@ -1,8 +1,8 @@
-using MediaPlayer.Core.EntityAbstraction;
+using MediaPlayer.Core.src.EntityAbstraction;
 
-namespace MediaPlayer.Core.Entity
+namespace MediaPlayer.Core.src.Entity
 {
-    public class User:IUserAction
+    public class User 
     {
         public string Username { get; set; }
         public string Email { get; set; }
@@ -20,8 +20,8 @@ namespace MediaPlayer.Core.Entity
             Username = username;
             Email = email;
             FullName = fullName;
-            Id=Guid.NewGuid();
-            CreatedAt=DateTime.Now;
+            Id = Guid.NewGuid();
+            CreatedAt = DateTime.Now;
         }
 
         public PlayList CreateNewPlaylist(string name)

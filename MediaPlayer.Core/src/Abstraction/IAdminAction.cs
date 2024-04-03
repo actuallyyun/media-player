@@ -1,4 +1,4 @@
-namespace MediaPlayer.Core.EntityAbstraction
+namespace MediaPlayer.Core.src.EntityAbstraction
 {
     public interface IAdminAction
     {

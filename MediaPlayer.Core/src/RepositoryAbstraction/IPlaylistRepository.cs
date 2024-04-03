@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediaPlayer.Core.Entity;
 
-namespace MediaPlayer.Core.RepositoryAbstraction
+using MediaPlayer.Core.src.Entity;
+
+namespace MediaPlayer.Core.src.RepositoryAbstraction
 {
     public interface IPlaylistRepository
     {
