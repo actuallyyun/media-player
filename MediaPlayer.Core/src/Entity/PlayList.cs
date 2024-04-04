@@ -2,18 +2,18 @@ namespace MediaPlayer.Core.src.Entity
 {
     public class PlayList
     {
-        public Guid OwnerId;
+        public Guid OwnerId{get;}
         public string Name { get; set; }
-        public HashSet<Media> _mediaItems;
+        public HashSet<Media> _mediaItems{get;set;}
         public bool IsPrivate { get; set; }
 
         public bool IsPlaying{get;set;} // default to false
         public bool IsPaused{get;set;}
 
-        public Guid Id;
+        public Guid Id{get;set;}
 
-        public DateTime CreatedAt;
-        public DateTime LastUpdatedAt;
+        public DateTime CreatedAt{get;set;}
+        public DateTime LastUpdatedAt{get;set;}
 
         public PlayList(Guid ownerId, string name, bool isPrivate = false)
         { // default private setting is false. 

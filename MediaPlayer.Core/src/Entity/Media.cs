@@ -11,15 +11,15 @@ namespace MediaPlayer.Core.src.Entity
     public abstract class Media // mark it abstract so it cannot be instantiated
     {
         public abstract MediaType Type { get;}
-        public string Title ;
-        public string Artist ;
-        public int Year;
+        public string Title {get;set;}
+        public string Artist {get;set;}
+        public int Year{get;set;}
 
-        public int Volumn;
+        public int Volumn{get;set;}
 
-        public Guid Id;
-        public DateTime CreatedAt;
-        public DateTime LastUpdatedAt;
+        public Guid Id{get;}
+        public DateTime CreatedAt{get;}
+        public DateTime LastUpdatedAt{get;set;}
 
         public Media(string title, string artist, int year)
         {
@@ -29,7 +29,7 @@ namespace MediaPlayer.Core.src.Entity
                 {
                     Year = year;
                 }else{
-                    Console.WriteLine("Invalid year");
+                    throw new ArgumentException("Invalid Year argument.");
                 }
                 Volumn=50;// set default vol
         }

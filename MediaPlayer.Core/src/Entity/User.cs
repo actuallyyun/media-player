@@ -36,21 +36,6 @@ namespace MediaPlayer.Core.src.Entity
             _playlists.Remove(playList);
         }
 
-        public void PlayPlaylist(PlayList playlist)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PausePlaylist(PlayList playlist)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void StopPlaylist(PlayList playlist)
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             return $"Usename:{Username},email:{Email},fullname:{FullName},isAdmin:{IsAdmin}";

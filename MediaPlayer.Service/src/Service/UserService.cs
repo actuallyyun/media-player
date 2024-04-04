@@ -1,12 +1,11 @@
 using MediaPlayer.Core.src.Entity;
-using MediaPlayer.Core.src.EntityAbstraction;
 using MediaPlayer.Core.src.RepositoryAbstraction;
 using MediaPlayer.Service.src.DTO;
 using MediaPlayer.Service.src.Utils;
 
 namespace MediaPlayer.Service.Service
 {
-    public class UserService : IUserAction
+    public class UserService
     {
          private IUserRepository _userRepository;
         private Admin _admin;
