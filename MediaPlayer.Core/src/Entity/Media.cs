@@ -15,6 +15,8 @@ namespace MediaPlayer.Core.src.Entity
         public string Artist ;
         public int Year;
 
+        public int Volumn;
+
         public Guid Id;
         public DateTime CreatedAt;
         public DateTime LastUpdatedAt;
@@ -29,6 +31,11 @@ namespace MediaPlayer.Core.src.Entity
                 }else{
                     Console.WriteLine("Invalid year");
                 }
+                Volumn=50;// set default vol
+        }
+
+        public void SetVolumn(int vol){
+            Volumn=vol;
         }
 
         public override string ToString()

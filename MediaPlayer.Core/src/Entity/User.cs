@@ -7,6 +7,7 @@ namespace MediaPlayer.Core.src.Entity
         public string Username { get; set; }
         public string Email { get; set; }
         public string FullName { get; set; }
+        public virtual bool IsAdmin=>false; // does not allow to change admin setting.
 
         public Guid Id;
 
@@ -21,22 +22,18 @@ namespace MediaPlayer.Core.src.Entity
             Email = email;
             FullName = fullName;
             Id = Guid.NewGuid();
+            _playlists=[];
             CreatedAt = DateTime.Now;
-        }
-
-        public PlayList CreateNewPlaylist(string name)
-        {
-            throw new NotImplementedException();
         }
 
         public void AddPlaylist(PlayList playlist)
         {
-            throw new NotImplementedException();
+            _playlists.Add(playlist);
         }
 
-        public void DeletePlaylistById(int id)
+        public void DeletePlaylistById(PlayList playList)
         {
-            throw new NotImplementedException();
+            _playlists.Remove(playList);
         }
 
         public void PlayPlaylist(PlayList playlist)
@@ -52,6 +49,11 @@ namespace MediaPlayer.Core.src.Entity
         public void StopPlaylist(PlayList playlist)
         {
             throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return $"Usename:{Username},email:{Email},fullname:{FullName},isAdmin:{IsAdmin}";
         }
     }
 }

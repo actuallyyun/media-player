@@ -2,31 +2,49 @@ namespace MediaPlayer.Core.src.Entity
 {
     public class PlayList
     {
+        public Guid OwnerId;
         public string Name { get; set; }
-        public HashSet<Media> _list;
+        public HashSet<Media> _mediaItems;
         public bool IsPrivate { get; set; }
 
-        public int Id;
+        public bool IsPlaying{get;set;} // default to false
+        public bool IsPaused{get;set;}
+
+        public Guid Id;
 
         public DateTime CreatedAt;
         public DateTime LastUpdatedAt;
 
-        public PlayList(string name, bool isPrivate = false)
-        { // default private setting is false
+        public PlayList(Guid ownerId, string name, bool isPrivate = false)
+        { // default private setting is false. 
+        // If it's private, it cannot be accessed by other users.
+            OwnerId=ownerId;
             Name = name;
             IsPrivate = isPrivate;
-            Id++;
+            Id=Guid.NewGuid();
+            IsPlaying=false;
+            IsPaused=false;
+            _mediaItems=[];
             CreatedAt = DateTime.Now;
+        }
+
+        public IEnumerable<Media> GetList(){
+            return _mediaItems;
         }
 
         public void AddToList(Media media)
         {
-            _list.Add(media);
+            _mediaItems.Add(media);
         }
 
         public void RemoveFromList(Media media)
         {
-            _list.Remove(media);
+            _mediaItems.Remove(media);
+        }
+
+        public override string ToString()
+        {
+            return $"PlayList Name:{Name},items:{_mediaItems.Count},Owner:{OwnerId}";
         }
     }
 }

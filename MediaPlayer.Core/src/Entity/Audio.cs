@@ -11,13 +11,13 @@ namespace MediaPlayer.Core.src.Entity
         public override MediaType Type=> MediaType.Audio;
         public string SoundAffect
         {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
+            get;
+            set;
         }
 
         public void SetSoundAffect(string soundAffect)
         {
-            throw new NotImplementedException();
+            SoundAffect=soundAffect;
         }
     }
 }

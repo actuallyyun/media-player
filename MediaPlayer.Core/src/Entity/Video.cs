@@ -11,13 +11,13 @@ namespace MediaPlayer.Core.src.Entity
         public override MediaType Type=>MediaType.Video;
         public string Brightness
         {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
+            get;
+            set;
         }
 
         public void SetBrightness(string brightness)
         {
-            throw new NotImplementedException();
+            Brightness=brightness;
         }
     }
 }

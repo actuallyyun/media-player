@@ -6,8 +6,11 @@ namespace MediaPlayer.Core.src.RepositoryAbstraction
     public interface IPlaylistRepository
     {
         public IEnumerable<PlayList> GetAllPublicPlaylists();
-        public void AddNewPlaylist(PlayList playlist);
-        public void RemovePlaylist(PlayList playlist);
+        public HashSet<PlayList>GetPlayListsByOwnerId(Guid id);
+        public PlayList? GetPlayListById(Guid id);
+        public void AddPlaylist(PlayList playlist);
+        public void RemovePlaylistById(Guid id);
+        public void UpdatePlaylist(PlayList playlist);
         public IEnumerable<PlayList>? GetPlaylistByName(string name);
     }
 }
