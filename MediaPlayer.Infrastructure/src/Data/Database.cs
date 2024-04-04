@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediaPlayer.Core.src.Entity;
 
 namespace MediaPlayer.Infrastructure.src.Data
@@ -11,13 +7,14 @@ namespace MediaPlayer.Infrastructure.src.Data
         public HashSet<Media> _media;
         public HashSet<User> _users;
         public HashSet<PlayList> _playlists;
-        public Database(){
-           _media=CreateMedia();
+        public static Database _instance;
+        private Database(){
+           _media=SeedMedia();
            _users=[];
            _playlists=[];
         }
 
-        public HashSet<Media> CreateMedia(){
+        public HashSet<Media> SeedMedia(){
             HashSet<Media> media=[];
             Media video1 = new Video("Sample Video 1", "John Doe", 2020);
             Media video2 = new Video("Sample Video 2", "Jane Smith", 2018);
@@ -30,6 +27,12 @@ namespace MediaPlayer.Infrastructure.src.Data
             media.Add(audio2);
             media.Add(audio3);
             return media;
+        }
+        public static Database GetDatabase(){
+            if(_instance is null){
+                _instance=new Database();
+            }
+            return _instance;
         }
     }
 }

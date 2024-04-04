@@ -15,7 +15,7 @@ internal class Program
     private static void Main(string[] args)
     {
         // Test user service
-        var db = new Database();
+        var db = Database.GetDatabase();
         var userRepo = new UserRepository(db);
         var admin=CreateAdmin();
 
