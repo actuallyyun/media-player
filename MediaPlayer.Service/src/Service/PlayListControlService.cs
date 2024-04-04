@@ -1,86 +1,99 @@
+using MediaPlayer.Core.src.Abstraction;
 using MediaPlayer.Core.src.Entity;
 
 namespace MediaPlayer.Service.src.Service
 {
-    public class PlayListControlService
+    public class PlayListControlService : IMediaPlayerMonitor
     {
+        private List<INotify> _observers = new List<INotify>();
         private PlayList _playList;
         private User _user;
 
-        public PlayListControlService(PlayList playList,User user){
-            _playList=playList;
-            _user=user;
+        public PlayListControlService(PlayList playList, User user)
+        {
+            _playList = playList;
+            _user = user;
+            Notify($"A new playlist control service is created by user :{_user}");
         }
 
         public void PausePlaylist()
         {
             _playList.IsPlaying = false;
             _playList.IsPaused = true;
-            Console.WriteLine($"Playlist{_playList} paused");
+            Notify($"Playlist{_playList} paused");
         }
 
         public void PlayPlaylist()
         {
             _playList.IsPlaying = true;
             _playList.IsPaused = false;
-            Console.WriteLine($"Playlist{_playList} is playing");
+            Notify($"Playlist{_playList} is playing");
         }
 
         public void StopPlaylist()
         {
             _playList.IsPlaying = false;
             _playList.IsPaused = false;
-            Console.WriteLine($"Playlist{_playList} is stopped.");
+            Notify($"Playlist{_playList} is stopped.");
         }
 
         public bool ChangeVolumn(Media media, int volumn)
-        {// TODO add check if media is part of the playlist
-
-            if (volumn > 0 && volumn <= 100)
+        { // TODO add check if media is part of the playlist
+            if (volumn < 0 || volumn > 100)
             {
-                media.SetVolumn(volumn);
-                return true;
-            }
-            else
-            {
-                Console.WriteLine("Invalid volumn");
+                Notify("Cannot set valoum: invalid volumn.");
                 return false;
             }
+            media.SetVolumn(volumn);
+            Notify($"Volumn is set to:{volumn}.");
+            return true;
         }
 
         public bool ChangeSoundEffect(Media media, string soundAffect)
-        {// TODO add check if media is part of the playlist
-            if (media is Audio)
+        { // TODO add check if media is part of the playlist
+            if (media is not Audio)
             {
-                var audio = (Audio)media;
-                audio.SetSoundAffect(soundAffect);
-                Console.WriteLine($"Sound affect is set to {audio.SoundAffect}");
-                return true;
-            }
-            else
-            {
-                Console.WriteLine($"Cannot set soundAffect on non audios.");
+                Notify($"Cannot set soundAffect on non audios.");
                 return false;
             }
+
+            var audio = (Audio)media;
+            audio.SetSoundAffect(soundAffect);
+            Notify($"Sound affect is set to {audio.SoundAffect}");
+            return true;
         }
 
         public bool ChangeBrightness(Media media, string brightness)
-        {// TODO add check if media is part of the playlist
-            if (media is Video)
+        { // TODO add check if media is part of the playlist
+            if (media is not Video)
             {
-                var video = (Video)media;
-                video.SetBrightness(brightness);
-                Console.WriteLine($"Brightness is set to {video.Brightness}");
-                return true;
-            }
-            else
-            {
-                Console.WriteLine($"Cannot set brightness on non videos.");
+                Notify($"Cannot set brightness on non videos.");
 
                 return false;
             }
+
+            var video = (Video)media;
+            video.SetBrightness(brightness);
+            Notify($"Brightness is set to {video.Brightness}");
+            return true;
         }
 
+        public void Attach(INotify observer)
+        {
+            _observers.Add(observer);
+        }
 
+        public void Detach(INotify observer)
+        {
+            _observers.Remove(observer);
+        }
+
+        public void Notify(string message)
+        {
+            foreach (var observer in _observers)
+            {
+                observer.Update(message);
+            }
+        }
     }
 }

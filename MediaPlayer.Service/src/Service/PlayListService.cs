@@ -1,3 +1,4 @@
+using MediaPlayer.Core.src.Abstraction;
 using MediaPlayer.Core.src.Entity;
 using MediaPlayer.Core.src.RepositoryAbstraction;
 using MediaPlayer.Service.src.DTO;
@@ -5,29 +6,36 @@ using MediaPlayer.Service.src.Utils;
 
 namespace MediaPlayer.Service.src.Service
 {
-    public class PlayListService
+    public class PlayListService : IMediaPlayerMonitor
     {
+        private List<INotify> _observers = new List<INotify>();
         private IPlaylistRepository _playListRepository;
         private User _user;
+
         public PlayListService(IPlaylistRepository playlistRepo, User user)
         {
             _playListRepository = playlistRepo;
             _user = user;
         }
 
-        public PlayList CreateNewPlaylist(PlayListCreateDTO playListCreate)
+        public PlayList? CreateNewPlaylist(PlayListCreateDTO playListCreate)
         {
+            if (playListCreate.OwnerId != _user.Id)
+            {
+                Notify("Cannot create playlist. Wrong owner id");
+                return null;
+            }
             var playListFactory = new PlayListFactory();
             var newPlayList = playListFactory.Create(playListCreate);
             if (newPlayList is not null)
             {
                 _playListRepository.AddPlaylist(newPlayList);
                 _user.AddPlaylist(newPlayList);
-                Console.WriteLine($"New playlist created:{newPlayList}");
+                Notify($"New playlist created:{newPlayList}.");
             }
             else
             {
-                Console.WriteLine($"Failed to create new playlist.");
+                Notify($"Failed to create new playlist.");
             }
 
             return newPlayList;
@@ -40,11 +48,12 @@ namespace MediaPlayer.Service.src.Service
             if (playList is not null)
             {
                 _user.AddPlaylist(playList);
+                Notify($"Added playlist:{playList}");
                 return true;
             }
             else
             {
-                Console.WriteLine("Failed to add playlist.");
+                Notify("Failed to add playlist: playlist not found.");
                 return false;
             }
         }
@@ -52,21 +61,19 @@ namespace MediaPlayer.Service.src.Service
         public bool AddMediaToPlayList(Guid playListId, Media media)
         {
             var playList = GetUserPlayListById(playListId);
-            if (playList is not null)
+            if (playList is null)
             {
-                playList.AddToList(media);
-                Console.WriteLine($"Media:{media.Title} added to playlist:{playList}");
-                return true;
-            }
-            else
-            {
+                Notify("Cannot add media to playlist: playlist not found");
                 return false;
             }
+            playList.AddToList(media);
+            Notify($"Media:{media.Title} added to playlist:{playList}");
+            return true;
         }
 
         public PlayList? GetUserPlayListById(Guid id)
         {
-            return _user._playlists.First(p => p.Id == id);
+            return _user._playlists.FirstOrDefault(p => p.Id == id);
         }
 
         public HashSet<PlayList> GetUserPlayLists()
@@ -76,20 +83,33 @@ namespace MediaPlayer.Service.src.Service
 
         public bool DeletePlaylistById(Guid id)
         {
-            var playList = _user._playlists.FirstOrDefault(p => p.Id == id);
-            if (playList is not null)
+            var playList = GetUserPlayListById(id);
+            if (playList is null)
             {
-                _user._playlists.Remove(playList);
-                Console.WriteLine($"Successfully removed playlist:{playList}");
-                return true;
-            }
-            else
-            {
-                Console.WriteLine($"The playlist you want to remove does not exists.");
+                Notify($"The playlist you want to remove does not exists.");
                 return false;
             }
+            _user._playlists.Remove(playList);
+            Notify($"Successfully removed playlist:{playList}");
+            return true;
         }
 
+        public void Attach(INotify observer)
+        {
+            _observers.Add(observer);
+        }
 
+        public void Detach(INotify observer)
+        {
+            _observers.Remove(observer);
+        }
+
+        public void Notify(string message)
+        {
+            foreach (var observer in _observers)
+            {
+                observer.Update(message);
+            }
+        }
     }
 }

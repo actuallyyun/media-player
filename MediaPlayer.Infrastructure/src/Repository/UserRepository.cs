@@ -4,7 +4,7 @@ using MediaPlayer.Infrastructure.src.Data;
 
 namespace MediaPlayer.Infrastructure.src.Repository
 {
-    public class UserRepository:IUserRepository
+    public class UserRepository : IUserRepository
     {
         private HashSet<User> _users;
 
@@ -18,13 +18,14 @@ namespace MediaPlayer.Infrastructure.src.Repository
             _users.Add(user);
         }
 
-        public User? GetUserByName(string name){
-            return _users.First(u=>u.Username==name);
+        public User? GetUserByName(string name)
+        {
+            return _users.FirstOrDefault(u => u.Username == name);
         }
 
-        public bool DeleteUserById(Guid id)
+        public void RemoveUser(User user)
         {
-            throw new NotImplementedException();
+            _users.Remove(user);
         }
 
         public IEnumerable<User> GetAllUsers()

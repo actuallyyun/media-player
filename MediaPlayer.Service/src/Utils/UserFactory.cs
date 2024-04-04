@@ -9,6 +9,8 @@ namespace MediaPlayer.Service.src.Utils
         public User? Create(UserCreateDto userCreate){
             // create a user or an admin
             User newUser=null;
+            
+
             if(userCreate.IsAdmin){
                 newUser=new Admin(userCreate.Username,userCreate.Email,userCreate.FullName);
             }else{

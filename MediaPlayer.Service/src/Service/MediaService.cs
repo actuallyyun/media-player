@@ -1,3 +1,4 @@
+using MediaPlayer.Core.src.Abstraction;
 using MediaPlayer.Core.src.Entity;
 using MediaPlayer.Core.src.RepositoryAbstraction;
 using MediaPlayer.Service.src.DTO;
@@ -5,8 +6,9 @@ using MediaPlayer.Service.src.Utils;
 
 namespace MediaPlayer.Service.src.Service
 {
-    public class MediaService
+    public class MediaService : IMediaPlayerMonitor
     {
+        private List<INotify> _observers = new List<INotify>();
         private IMediaRepository _mediaRepository;
         private Admin _admin;
 
@@ -14,24 +16,49 @@ namespace MediaPlayer.Service.src.Service
         { // must provide an admin to instantianize the service since this is admin only feature
             _mediaRepository = mediaRepo;
             _admin = admin;
+            Notify($"A new user service is created by {_admin}");
         }
 
-        public Media? AddMedia(MediaCreateDto mediaCreate){
+        public Media? AddMedia(MediaCreateDto mediaCreate)
+        {
             var mediaFactory = new MediaFactory();
-            Media? newMedia = mediaFactory.Create(mediaCreate);
-            if (newMedia is not null)
+            try
             {
-                _mediaRepository.CreateNewMedia(newMedia);
+                Media? newMedia = mediaFactory.Create(mediaCreate);
+                if (newMedia is not null)
+                {
+                    _mediaRepository.CreateNewMedia(newMedia);
+                    Notify($"A new media is created:{newMedia}");
+                }
+                else
+                {
+                    Notify("Failed to create new media");
+                }
+                return newMedia;
+            }
+            catch (Exception e)
+            {
+                Notify($"An error has occurred:{e.Message}");
+                return null;
+            }
+        }
 
-                Console.WriteLine($"A new media is created:{newMedia}");
-                
-            }
-            else
+        public void Attach(INotify observer)
+        {
+            _observers.Add(observer);
+        }
+
+        public void Detach(INotify observer)
+        {
+            _observers.Remove(observer);
+        }
+
+        public void Notify(string message)
+        {
+            foreach (var observer in _observers)
             {
-                Console.WriteLine("Failed to create new media");
-                
+                observer.Update(message);
             }
-            return newMedia;
         }
 
         //public bool UpdateMedia(MediaUpdateDto mediaUpdate);
