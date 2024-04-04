@@ -21,8 +21,9 @@ namespace MediaPlayer.Service.Service
 
         public User? AddUser(UserCreateDto userCreate)
         {
-            var userFound=GetUserByName(userCreate.Username);
-            if(userFound is not null){ // username must be unique
+            var userFound = GetUserByName(userCreate.Username);
+            if (userFound is not null)
+            { // username must be unique
                 Notify("Invalid username.");
                 return null;
             }
@@ -30,16 +31,53 @@ namespace MediaPlayer.Service.Service
             User? newUser = useFactory.Create(userCreate);
             if (newUser is not null)
             {
-                _userRepository.CreateNewUser(newUser);
-                //Console.WriteLine($"A new user is created:{newUser}");
+                _userRepository.Add(newUser);
                 Notify($"A new user is created:{newUser}");
             }
             else
             {
                 Notify("Failed to create user.");
-                //Console.WriteLine("Failed to create user.");
             }
             return newUser;
+        }
+
+        public User? GetUserByName(string name)
+        {
+            return _userRepository.GetUserByName(name);
+        }
+
+
+        public bool DeleteUserById(Guid id)
+        {
+            var userFound = _userRepository.GetUserById(id);
+            if (userFound is null)
+            {
+                Notify("Cannot delete user: user not found");
+                return false;
+            }
+            Notify("User deleted.");
+            _userRepository.Remove(userFound);
+            return true;
+        }
+
+        public bool DeleteAllUsers()
+        {
+            _userRepository.RemoveAll();
+            Notify("All users are removed");
+            return true;
+        }
+
+        public bool UpdateUser(Guid id, UserUpdateDto userUpdate)
+        {
+            var userFound = _userRepository.GetUserById(id);
+            if (userFound is null)
+            {
+                Notify("Cannot update user: user not found");
+                return false;
+            }
+            Notify("User updated");
+            userFound.Update(userUpdate.Email, userUpdate.FullName);
+            return true;
         }
 
         public void Attach(INotify observer)
@@ -52,11 +90,6 @@ namespace MediaPlayer.Service.Service
             _observers.Remove(observer);
         }
 
-        public User? GetUserByName(string name)
-        {
-            return _userRepository.GetUserByName(name);
-        }
-
         public void Notify(string message)
         {
             foreach (var observer in _observers)
@@ -64,9 +97,5 @@ namespace MediaPlayer.Service.Service
                 observer.Update(message);
             }
         }
-        //public bool UpdateUser(UserUpdateDto userUpdate);
-
-        //public bool DeleteUserById(Guid id);
-        //public bool DeleteAllUsers();
     }
 }

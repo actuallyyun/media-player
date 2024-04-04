@@ -13,7 +13,7 @@ namespace MediaPlayer.Infrastructure.src.Repository
             _users = database._users;
         }
 
-        public void CreateNewUser(User user)
+        public void Add(User user)
         {
             _users.Add(user);
         }
@@ -23,19 +23,19 @@ namespace MediaPlayer.Infrastructure.src.Repository
             return _users.FirstOrDefault(u => u.Username == name);
         }
 
-        public void RemoveUser(User user)
+        public void Remove(User user)
         {
             _users.Remove(user);
         }
 
-        public IEnumerable<User> GetAllUsers()
+        public User? GetUserById(Guid id)
         {
-            throw new NotImplementedException();
+            return _users.FirstOrDefault(u=>u.Id==id);
         }
 
-        public bool UpdateUser(User user)
+        public void RemoveAll()
         {
-            throw new NotImplementedException();
+            _users.Clear();
         }
     }
 }

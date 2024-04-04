@@ -4,10 +4,10 @@ namespace MediaPlayer.Core.src.RepositoryAbstraction
 {
     public interface IUserRepository
     {
-        public IEnumerable<User> GetAllUsers();
-        public void CreateNewUser(User user);
+        public void Add(User user);
+        public User? GetUserById(Guid id);
         public User? GetUserByName(string name);
-        public void RemoveUser(User user);
-        public bool UpdateUser(User user);
+        public void Remove(User user);
+        public void RemoveAll();
     }
 }

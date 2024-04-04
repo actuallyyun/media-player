@@ -26,6 +26,11 @@ namespace MediaPlayer.Core.src.Entity
             CreatedAt = DateTime.Now;
         }
 
+        public void Update(string?email,string?fullName){
+            if(email is not null) Email=email; // Could add email validation
+            if(fullName is not null) FullName=fullName;
+        }
+
         public void AddPlaylist(PlayList playlist)
         {
             _playlists.Add(playlist);

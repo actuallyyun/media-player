@@ -1,6 +1,7 @@
 using MediaPlayer.Core.src.Abstraction;
 using MediaPlayer.Core.src.Entity;
 using MediaPlayer.Core.src.RepositoryAbstraction;
+using MediaPlayer.Core.src.Utils;
 using MediaPlayer.Service.src.DTO;
 using MediaPlayer.Service.src.Utils;
 
@@ -43,6 +44,44 @@ namespace MediaPlayer.Service.src.Service
             }
         }
 
+        public bool DeleteMediaById(Guid id)
+        {
+            var mediaFound = _mediaRepository.GetMediaById(id);
+            if (mediaFound is null)
+            {
+                Notify("Cannot delete.Media not found");
+                return false;
+            }
+            _mediaRepository.Remove(mediaFound);
+            Notify($"Media removed: {mediaFound}");
+            return true;
+        }
+
+        public bool DeleteAllMedia()
+        {
+            _mediaRepository.RemoveAll();
+            Notify("All media is removed");
+            return true;
+        }
+
+        public bool UpdateMedia(Guid id, MediaUpdateDto mediaUpdate)
+        {
+            var mediaFound = _mediaRepository.GetMediaById(id);
+            if (mediaFound is null)
+            {
+                Notify("Cannot update: media not found");
+                return false;
+            }
+            if(!Validator.IsValidYear(mediaUpdate.Year)){
+                Notify("Cannot update: invalid year");
+                return false;
+            }
+            mediaFound.Update(mediaUpdate.Title,mediaUpdate.Artist,mediaUpdate.Year);
+            Notify("Update successful!");
+            return true;
+
+        }
+
         public void Attach(INotify observer)
         {
             _observers.Add(observer);
@@ -60,10 +99,5 @@ namespace MediaPlayer.Service.src.Service
                 observer.Update(message);
             }
         }
-
-        //public bool UpdateMedia(MediaUpdateDto mediaUpdate);
-
-        //public bool DeleteMediaById(Guid id);
-        //public bool DeleteAllMedia();
     }
 }

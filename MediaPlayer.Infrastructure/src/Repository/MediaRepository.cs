@@ -26,14 +26,22 @@ namespace MediaPlayer.Infrastructure.src.Repository
             throw new NotImplementedException();
         }
 
+        public Media? GetMediaById(Guid id)
+        {
+            return _meida.FirstOrDefault(m=>m.Id==id);
+        }
+
         public IEnumerable<Media>? GetMediaByTitle(string title)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveMediaById(Guid id)
+        public void Remove(Media media)
         {
-            throw new NotImplementedException();
+            _meida.Remove(media);
+        }
+        public void RemoveAll(){
+            _meida.Clear();
         }
 
         public void UpdateMedia(Media media)
