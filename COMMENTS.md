@@ -5,15 +5,15 @@
 ## Core Layer
 ### User Entity
 - A base `User` class that contains the common properties of all users.
-- `User` class has a `virtual` property `IsAdmin` that can be overridden by derived classes.
-- `Admin` class inherits from `User` class and overrides the `IsAdmin` property.
-- `User` class implments the `IUserAction` interface.
-- `Admin` class implments the `IAdminAction` interface.
+- `User` class has a `virtual` property `UserType` that can be overridden by derived classes.
+- `Admin` class inherits from `User` class and overrides the `UserType` property.
 
 ### Media Entity
 - An abstract `Media` class that contains the common properties of all media files. this class should not be directly instantiated.
 - `Video` and `Audio` classes inherit from the `Media` class. Each class implements the `MediaType` property.
 - `Video` and `Audio` classes implement the `IVideoable` and `IAudioble` interface respectly.
+
+### PlayList Entity
 
 ## Service Layer
 
@@ -48,11 +48,6 @@
 
 
 
-## Tuesday Task
-
-- [ ] Create a solution
-- [ ] Create and add 3 projects to the solution (2 classlibs, 1 console)
-- [ ] Add references(Infrastucture should reference Service, Service should reference Core, Core does not reference anything).
 
 ### Tools
 

@@ -4,7 +4,7 @@ namespace MediaPlayer.Core.src.Entity
     {
         public Guid OwnerId{get;}
         public string Name { get; set; }
-        public HashSet<Media> _mediaItems{get;set;}
+        private HashSet<Media> _mediaItems{get;set;}
         public bool IsPrivate { get; set; }
         public bool IsPlaying{get;set;} // default to false
         public bool IsPaused{get;set;}
@@ -45,8 +45,8 @@ namespace MediaPlayer.Core.src.Entity
             Name=name;
         }
 
-        public Media? GetMediaById(Guid id){
-            return _mediaItems.FirstOrDefault(m=>m.Id==id);
+        public IEnumerable<Media> GetAllMediaItems(){
+            return _mediaItems.ToList().AsReadOnly();
         }
 
         public override string ToString()

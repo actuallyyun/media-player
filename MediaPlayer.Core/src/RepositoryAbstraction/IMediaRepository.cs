@@ -8,9 +8,8 @@ namespace MediaPlayer.Core.src.RepositoryAbstraction
         public void Add(Media media);// deals with the original shape of the object, no DTOs
         public void Remove(Media media);
         public void RemoveAll();
-        public void Update(Media media,string? title,string? artist,int?year){
-            media.Update(title,artist,year);
-        }
+        public void Update(Media media,string? title,string? artist,int?year);
+        
         
     }
 }

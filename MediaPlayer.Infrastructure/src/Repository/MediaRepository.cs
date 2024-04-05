@@ -29,5 +29,9 @@ namespace MediaPlayer.Infrastructure.src.Repository
             _meida.Clear();
         }
 
+        public void Update(Media media, string? title, string? artist, int? year)
+        {
+            media.Update(title,artist,year);
+        }
     }
 }

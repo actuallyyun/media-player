@@ -18,9 +18,28 @@ namespace MediaPlayer.Infrastructure.src.Repository
             _playlists.Add(playlist);
         }
 
+        public void AddMediaToPlaylist(PlayList playlist, Media media)
+        {
+            playlist.AddToList(media);
+        }
+
+        public void AddToUserPlaylist(User user, PlayList playlist)
+        {
+            user.AddPlaylist(playlist);
+        }
+
         public IEnumerable<PlayList> GetAllPublicPlaylists()
         {
             return _playlists.Where(p => p.IsPrivate == false).ToList();
+        }
+
+        public Media? GetMediaInPlaylistById(Guid playlistId, Guid mediaId)
+        {
+            var playlist= _playlists.FirstOrDefault(p=>p.Id==playlistId);
+            if(playlist is null){
+                throw new ArgumentException($"Invalid argument. Playlist with{playlistId} is not found.");
+            }
+            return playlist.GetAllMediaItems().FirstOrDefault(i=>i.Id==mediaId);
         }
 
         public PlayList? GetPlayListById(Guid id)
@@ -41,6 +60,16 @@ namespace MediaPlayer.Infrastructure.src.Repository
         public void Remove(PlayList playlist)
         {
             _playlists.Remove(playlist);
+        }
+
+        public void RemoveFromUserPlaylist(User user, PlayList playlist)
+        {
+            user.DeletePlaylist(playlist);
+        }
+
+        public void RemoveMediaFromPlaylist(PlayList playlist, Media media)
+        {
+            playlist.RemoveFromList(media);
         }
 
         public void Update(PlayList playlist, string name)
