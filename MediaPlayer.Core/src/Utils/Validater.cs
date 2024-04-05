@@ -14,5 +14,15 @@ namespace MediaPlayer.Core.src.Utils
             }
             return true;
         }
+
+        public static bool IsValidBrightness(int? brightness){
+            if(brightness is null || brightness is not int){
+                return false;
+            }
+            if(brightness<1 || brightness>10){
+                return false;
+            }
+            return true;
+        }
     }
 }

@@ -1,9 +1,11 @@
+using MediaPlayer.Core.src.Enums;
+
 namespace MediaPlayer.Core.src.EntityAbstraction
 {
     public interface IAudioable
     {
-        public string SoundAffect{get;set;}
-        public void SetSoundAffect(string soundAffect);
+        public SoundEffectType SoundEffect{get;set;}
+        public void SetSoundEffect(SoundEffectType soundEffect);
 
     }
 }

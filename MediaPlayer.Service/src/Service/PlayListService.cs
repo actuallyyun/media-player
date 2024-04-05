@@ -25,6 +25,14 @@ namespace MediaPlayer.Service.src.Service
                 Notify("Cannot create playlist. Wrong owner id");
                 return null;
             }
+            var userPlaylist = _user.GetPlaylist();
+            if (userPlaylist.FirstOrDefault(p => p.Name == playListCreate.Name) is not null)
+            {
+                Notify(
+                    "Cannot create playlist. Playlist with the same name already exists in your collection"
+                );
+            }
+
             var playListFactory = new PlayListFactory();
             var newPlayList = playListFactory.Create(playListCreate);
             if (newPlayList is not null)
@@ -41,29 +49,36 @@ namespace MediaPlayer.Service.src.Service
             return newPlayList;
         }
 
-        public bool AddPlaylistById(Guid id)
+        public bool AddPlaylistById(Guid id) // add an existing playlist to user playlist collection
         {
-            PlayList? playList = _playListRepository.GetPlayListById(id);
-
-            if (playList is not null)
-            {
-                _user.AddPlaylist(playList);
-                Notify($"Added playlist:{playList}");
-                return true;
-            }
-            else
+            PlayList? playlistFound = _playListRepository.GetPlayListById(id);
+            if (playlistFound is null)
             {
                 Notify("Failed to add playlist: playlist not found.");
                 return false;
             }
+            var userPlaylist = _user.GetPlaylist();
+            if (userPlaylist.FirstOrDefault(p => p.Id == id) is not null)
+            {
+                Notify("Cannot add. Playlist already exsits in your collection.");
+                return false;
+            }
+            _user.AddPlaylist(playlistFound);
+            Notify($"Added playlist:{playlistFound}");
+            return true;
         }
 
         public bool AddMediaToPlayList(Guid playListId, Media media)
         {
-            var playList = GetUserPlayListById(playListId);
+            var playList = _user.GetPlaylist().FirstOrDefault(p => p.Id == playListId);
             if (playList is null)
             {
-                Notify("Cannot add media to playlist: playlist not found");
+                Notify("Cannot add media to playlist: playlist not found in your collection.");
+                return false;
+            }
+            if (playList.GetMediaById(media.Id) is not null)
+            {
+                Notify($"Cannot add media to playlist:{media} is already in your list.");
                 return false;
             }
             playList.AddToList(media);
@@ -71,25 +86,15 @@ namespace MediaPlayer.Service.src.Service
             return true;
         }
 
-        public PlayList? GetUserPlayListById(Guid id)
-        {
-            return _user._playlists.FirstOrDefault(p => p.Id == id);
-        }
-
-        public HashSet<PlayList> GetUserPlayLists()
-        {
-            return _user._playlists;
-        }
-
         public bool DeletePlaylistById(Guid id)
         {
-            var playList = GetUserPlayListById(id);
+            var playList =  _user.GetPlaylist().FirstOrDefault(p=>p.Id==id);
             if (playList is null)
             {
                 Notify($"The playlist you want to remove does not exists.");
                 return false;
             }
-            _user._playlists.Remove(playList);
+            _user.DeletePlaylist(playList);
             Notify($"Successfully removed playlist:{playList}");
             return true;
         }

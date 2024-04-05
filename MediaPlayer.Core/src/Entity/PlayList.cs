@@ -6,12 +6,9 @@ namespace MediaPlayer.Core.src.Entity
         public string Name { get; set; }
         public HashSet<Media> _mediaItems{get;set;}
         public bool IsPrivate { get; set; }
-
         public bool IsPlaying{get;set;} // default to false
         public bool IsPaused{get;set;}
-
         public Guid Id{get;set;}
-
         public DateTime CreatedAt{get;set;}
         public DateTime LastUpdatedAt{get;set;}
 
@@ -29,17 +26,23 @@ namespace MediaPlayer.Core.src.Entity
         }
 
         public IEnumerable<Media> GetList(){
-            return _mediaItems;
+            return _mediaItems.ToList().AsReadOnly();
         }
 
         public void AddToList(Media media)
         {
             _mediaItems.Add(media);
+            LastUpdatedAt=DateTime.Now;
         }
 
         public void RemoveFromList(Media media)
         {
             _mediaItems.Remove(media);
+            LastUpdatedAt=DateTime.Now;
+        }
+
+        public Media? GetMediaById(Guid id){
+            return _mediaItems.FirstOrDefault(m=>m.Id==id);
         }
 
         public override string ToString()

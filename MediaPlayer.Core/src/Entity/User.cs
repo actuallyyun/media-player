@@ -1,19 +1,16 @@
-using MediaPlayer.Core.src.EntityAbstraction;
+using MediaPlayer.Core.src.Enums;
 
 namespace MediaPlayer.Core.src.Entity
 {
     public class User 
     {
-        public string Username { get; set; }
+        public readonly string Username; // username must be unique and cannot be changed
         public string Email { get; set; }
         public string FullName { get; set; }
-        public virtual bool IsAdmin=>false; // does not allow to change admin setting.
-
+        public virtual UserType Type=>UserType.User; // Can be overridden by derived class Admin
         public Guid Id;
-
-        public HashSet<PlayList> _playlists;
-
-        public DateTime CreatedAt;
+        private HashSet<PlayList> _playlists;
+        public readonly DateTime CreatedAt;
         public DateTime LastUpdatedAt;
 
         public User(string username, string email, string fullName)
@@ -27,8 +24,13 @@ namespace MediaPlayer.Core.src.Entity
         }
 
         public void Update(string?email,string?fullName){
-            if(email is not null) Email=email; // Could add email validation
+            if(email is not null) Email=email; 
             if(fullName is not null) FullName=fullName;
+            LastUpdatedAt=DateTime.Now;
+        }
+
+        public IEnumerable<PlayList> GetPlaylist(){ // list cannot be modified
+            return _playlists.ToList().AsReadOnly();
         }
 
         public void AddPlaylist(PlayList playlist)
@@ -36,7 +38,7 @@ namespace MediaPlayer.Core.src.Entity
             _playlists.Add(playlist);
         }
 
-        public void DeletePlaylistById(PlayList playList)
+        public void DeletePlaylist(PlayList playList)
         {
             _playlists.Remove(playList);
         }

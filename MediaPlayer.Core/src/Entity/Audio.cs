@@ -1,23 +1,22 @@
 using MediaPlayer.Core.src.EntityAbstraction;
+using MediaPlayer.Core.src.Enums;
 
 namespace MediaPlayer.Core.src.Entity
 {
     public class Audio : Media, IAudioable
     {
-        public Audio(string title, string artist, int year) : base(title, artist, year)
-        {
-        }
+        public SoundEffectType SoundEffect { get; set; }
 
-        public override MediaType Type=> MediaType.Audio;
-        public string SoundAffect
-        {
-            get;
-            set;
-        }
+        public Audio(string title, string artist, int year)
+            : base(title, artist, year) { 
+                SoundEffect=SoundEffectType.None; // set default sound effect
+            }
 
-        public void SetSoundAffect(string soundAffect)
+        public override MediaType Type => MediaType.Audio;
+
+        public void SetSoundEffect(SoundEffectType soundEffect)
         {
-            SoundAffect=soundAffect;
+            SoundEffect = soundEffect;
         }
     }
 }

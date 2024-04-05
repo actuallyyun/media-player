@@ -1,14 +1,9 @@
 using MediaPlayer.Core.src.Utils;
 using Microsoft.VisualBasic;
+using MediaPlayer.Core.src.Enums;
 
 namespace MediaPlayer.Core.src.Entity
 {
-    public enum MediaType
-    {
-        Video,
-        Audio
-    }
-
     public abstract class Media // mark it abstract so it cannot be instantiated
     {
         public abstract MediaType Type { get; }
@@ -48,7 +43,7 @@ namespace MediaPlayer.Core.src.Entity
             }
         }
 
-        public void SetVolumn(int vol)
+        public void SetVolumn(int vol)// all media can set volumn
         {
             Volumn = vol;
         }
