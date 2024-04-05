@@ -41,6 +41,10 @@ namespace MediaPlayer.Core.src.Entity
             LastUpdatedAt=DateTime.Now;
         }
 
+        public void Update(string name){
+            Name=name;
+        }
+
         public Media? GetMediaById(Guid id){
             return _mediaItems.FirstOrDefault(m=>m.Id==id);
         }

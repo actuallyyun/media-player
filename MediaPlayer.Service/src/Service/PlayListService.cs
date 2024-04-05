@@ -119,6 +119,22 @@ namespace MediaPlayer.Service.src.Service
             return true;
         }
 
+        public bool UpdatePlaylist(Guid id,string name){
+            var playlistFound=_playListRepository.GetUserPlaylistById(_user.Id,id);
+            if(playlistFound is null){
+                Notify("Cannot update playlist. Playlist not found");
+                return false;
+            }
+            var existingPlaylist=_playListRepository.GetUserPlaylistByName(_user.Id,name);
+            if(existingPlaylist is not null){
+                Notify("Cannot update playlist. A playlist with the same name already exits. Choose another name.");
+                return false;
+            }
+            playlistFound.Update(name);
+            Notify($"Update successfully. New playlist name:{name}");
+            return true;
+        }
+
         public void Attach(INotify observer)
         {
             _observers.Add(observer);

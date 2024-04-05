@@ -28,10 +28,24 @@ namespace MediaPlayer.Infrastructure.src.Repository
             return _playlists.FirstOrDefault(p => p.Id == id);
         }
 
+        public PlayList? GetUserPlaylistById(Guid userId, Guid id)
+        {
+            return _playlists.FirstOrDefault(p=>p.OwnerId==userId&&p.Id==id);
+        }
+
+        public PlayList? GetUserPlaylistByName(Guid userId, string name)
+        {
+            return _playlists.FirstOrDefault(p=>p.OwnerId==userId&&p.Name.ToLower()==name.ToLower());
+        }
+
         public void Remove(PlayList playlist)
         {
             _playlists.Remove(playlist);
         }
 
+        public void Update(PlayList playlist, string name)
+        {
+            playlist.Update(name);
+        }
     }
 }
