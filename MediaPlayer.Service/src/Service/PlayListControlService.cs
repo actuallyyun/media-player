@@ -1,5 +1,7 @@
 using MediaPlayer.Core.src.Abstraction;
 using MediaPlayer.Core.src.Entity;
+using MediaPlayer.Core.src.Enums;
+using MediaPlayer.Core.src.Utils;
 
 namespace MediaPlayer.Service.src.Service
 {
@@ -38,7 +40,7 @@ namespace MediaPlayer.Service.src.Service
         }
 
         public bool ChangeVolumn(Media media, int volumn)
-        { // TODO add check if media is part of the playlist
+        {
             if (volumn < 0 || volumn > 100)
             {
                 Notify("Cannot set valoum: invalid volumn.");
@@ -49,8 +51,8 @@ namespace MediaPlayer.Service.src.Service
             return true;
         }
 
-        public bool ChangeSoundEffect(Media media, string soundAffect)
-        { // TODO add check if media is part of the playlist
+        public bool ChangeSoundEffect(Media media, SoundEffectType soundEffect)
+        {
             if (media is not Audio)
             {
                 Notify($"Cannot set soundAffect on non audios.");
@@ -58,24 +60,37 @@ namespace MediaPlayer.Service.src.Service
             }
 
             var audio = (Audio)media;
-            audio.SetSoundAffect(soundAffect);
-            Notify($"Sound affect is set to {audio.SoundAffect}");
+            audio.SetSoundEffect(soundEffect);
+            Notify($"Sound affect is set to {audio.SoundEffect}");
             return true;
         }
 
-        public bool ChangeBrightness(Media media, string brightness)
-        { // TODO add check if media is part of the playlist
+        public bool ChangeBrightness(Media media, int brightness)
+        {
             if (media is not Video)
             {
                 Notify($"Cannot set brightness on non videos.");
 
                 return false;
             }
+            if (!Validator.IsValidBrightness(brightness))
+            {
+                Notify($"Cannot set brightness:invalid arguments.");
+                return false;
+            }
 
             var video = (Video)media;
-            video.SetBrightness(brightness);
-            Notify($"Brightness is set to {video.Brightness}");
-            return true;
+            try
+            {
+                video.SetBrightness(brightness);
+                Notify($"Brightness is set to {video.Brightness}");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Notify(e.Message);
+                return false;
+            }
         }
 
         public void Attach(INotify observer)

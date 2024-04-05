@@ -7,7 +7,6 @@ namespace MediaPlayer.Infrastructure.src.Repository
     public class UserRepository : IUserRepository
     {
         private HashSet<User> _users;
-
         public UserRepository(Database database)
         {
             _users = database._users;
@@ -37,5 +36,6 @@ namespace MediaPlayer.Infrastructure.src.Repository
         {
             _users.Clear();
         }
+
     }
 }
