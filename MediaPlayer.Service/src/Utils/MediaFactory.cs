@@ -1,6 +1,7 @@
 using MediaPlayer.Core.src.Entity;
 using MediaPlayer.Service.src.DTO;
 using Microsoft.VisualBasic;
+using MediaPlayer.Core.src.Enums;
 
 namespace MediaPlayer.Service.src.Utils
 {

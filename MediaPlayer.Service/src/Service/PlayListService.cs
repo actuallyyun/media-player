@@ -86,9 +86,28 @@ namespace MediaPlayer.Service.src.Service
             return true;
         }
 
+        public bool RemoveMediaFromList(Guid listId, Guid mediaId)
+        {
+            var playList = _user.GetPlaylist().FirstOrDefault(p => p.Id == listId);
+            if (playList is null)
+            {
+                Notify("Cannot remove media from playlist: playlist not found in your collection.");
+                return false;
+            }
+            var mediaFound = playList.GetMediaById(mediaId);
+            if (mediaFound is null)
+            {
+                Notify($"Cannot remove media from playlist:media not found in your list.");
+                return false;
+            }
+            playList.RemoveFromList(mediaFound);
+            Notify($"Media:{mediaFound.Title} removed from playlist:{playList}");
+            return true;
+        }
+
         public bool DeletePlaylistById(Guid id)
         {
-            var playList =  _user.GetPlaylist().FirstOrDefault(p=>p.Id==id);
+            var playList = _user.GetPlaylist().FirstOrDefault(p => p.Id == id);
             if (playList is null)
             {
                 Notify($"The playlist you want to remove does not exists.");

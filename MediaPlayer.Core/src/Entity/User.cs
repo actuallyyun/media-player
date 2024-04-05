@@ -45,7 +45,7 @@ namespace MediaPlayer.Core.src.Entity
 
         public override string ToString()
         {
-            return $"Usename:{Username},email:{Email},fullname:{FullName},isAdmin:{IsAdmin}";
+            return $"Usename:{Username},email:{Email},fullname:{FullName},Type:{Type}";
         }
     }
 }

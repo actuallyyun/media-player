@@ -1,4 +1,6 @@
 
+using MediaPlayer.Core.src.Enums;
+
 namespace MediaPlayer.Service.src.DTO
 {
     public class UserCreateDto
@@ -6,14 +8,14 @@ namespace MediaPlayer.Service.src.DTO
         public string Username { get; set; }
         public string Email { get; set; }
         public string FullName { get; set; }
-        public bool IsAdmin;
+        public UserType Type;
 
-        public UserCreateDto(string username, string email, string fullName,bool isAdmin)
+        public UserCreateDto(string username, string email, string fullName,UserType type)
         {
             Username = username;
             Email = email;
             FullName = fullName;
-            IsAdmin=isAdmin;
+            Type=type;
         }
     }
     public class UserUpdateDto{ // does not allow update username. Username must be unique

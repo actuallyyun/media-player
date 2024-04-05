@@ -1,4 +1,5 @@
 ﻿using MediaPlayer.Core.src.Entity;
+using MediaPlayer.Core.src.Enums;
 using MediaPlayer.Infrastructure.src.Data;
 using MediaPlayer.Infrastructure.src.Repository;
 using MediaPlayer.Service.Service;
@@ -15,15 +16,15 @@ internal class Program
 
     public static void TestUserService(UserService userService)
     {
-        var admin2 = new UserCreateDto("admin2", "admin@gmail.com", "Admin 2", true);
-        var user1 = new UserCreateDto("user", "user1@gmail.com", "User 1", false);
+        var admin2 = new UserCreateDto("admin0", "admin@gmail.com", "Admin ", UserType.Admin);
+        var user1 = new UserCreateDto("user", "user1@gmail.com", "User 1", UserType.User);
         Console.WriteLine("Should create users sucessfully\n");
         var user = userService.AddUser(user1);
         var admin = userService.AddUser(admin2);
         Console.WriteLine(user);
         Console.WriteLine(admin);
         Console.WriteLine("Should not create existing user\n");
-        var user1Duplicate = new UserCreateDto("user", "user1@gmail.com", "User 1", false);
+        var user1Duplicate = new UserCreateDto("user", "user1@gmail.com", "User 1", UserType.User);
         userService.AddUser(user1Duplicate);
         Console.WriteLine("Should remove user successfully");
         userService.DeleteUserById(user.Id);
@@ -57,13 +58,16 @@ internal class Program
         mediaService.DeleteMediaById(Guid.NewGuid());
     }
 
-    public static void TestPlayListService(PlayListService playListService,User user)
+    public static void TestPlayListService(PlayListService playListService, User user, Database db)
     {
         var playList1 = new PlayListCreateDTO(user.Id, "Yun playlist 1", false);
-        var playlist2 = new PlayListCreateDTO(user.Id, "My Playlist 1");
+        var playlist = playListService.CreateNewPlaylist(playList1);
 
-        var playlsit = playListService.CreateNewPlaylist(playList1);
-        playListService.CreateNewPlaylist(playlist2);
+        var media = db._media.First();
+        playListService.AddMediaToPlayList(playlist.Id, media);
+        playListService.RemoveMediaFromList(playlist.Id, media.Id);
+        playListService.DeletePlaylistById(playlist.Id);
+        playListService.RemoveMediaFromList(playlist.Id, media.Id);
     }
 
     private static void Main(string[] args)
@@ -74,28 +78,26 @@ internal class Program
         var adminNotification = new AdminNotification();
         var userNotification = new UserNotification();
 
-        Console.WriteLine("##############Test user service##############\n");
-        var userRepo = new UserRepository(db);
-        var userService = new UserService(userRepo, admin);
-        userService.Attach(adminNotification);
+        //Console.WriteLine("##############Test user service##############\n");
+        //var userRepo = new UserRepository(db);
+        //var userService = new UserService(userRepo, admin);
+        //userService.Attach(adminNotification);
 
-        TestUserService(userService);
+        //TestUserService(userService);
 
-        Console.WriteLine("\n##############Test media service##############\n");
-        var mediaRepo = new MediaRepository(db);
-        var mediaService = new MediaService(mediaRepo, admin);
-        mediaService.Attach(adminNotification);
+        //Console.WriteLine("\n##############Test media service##############\n");
+        //var mediaRepo = new MediaRepository(db);
+        //var mediaService = new MediaService(mediaRepo, admin);
+        //mediaService.Attach(adminNotification);
 
-        TestMediaService(mediaService);
+        //TestMediaService(mediaService);
 
         //// Test playlist service
         var playListRepo = new PlaylistRepository(db);
-        var user1 = new UserCreateDto("user", "user1@gmail.com", "User 1", false);
-        Console.WriteLine("Should create users sucessfully\n");
-        var user = userService.AddUser(user1);
+        var user = db._users.First();
         var playListService = new PlayListService(playListRepo, user);
         playListService.Attach(userNotification);
-        TestPlayListService(playListService,user);
+        TestPlayListService(playListService, user, db);
 
         //// PlayList control service
         //var playListController = new PlayListControlService(playlsit, user);

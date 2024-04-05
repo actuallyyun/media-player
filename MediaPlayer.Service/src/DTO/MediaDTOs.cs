@@ -1,4 +1,4 @@
-using MediaPlayer.Core.src.Entity;
+using MediaPlayer.Core.src.Enums;
 
 namespace MediaPlayer.Service.src.DTO
 {
