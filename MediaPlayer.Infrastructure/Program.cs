@@ -13,6 +13,10 @@ internal class Program
         var admin = new Admin("admin", "admin@mail.com", "Admin");
         return admin;
     }
+    public static User CreateTestUser(){
+        var user=new User("testusr","u@mail.com","User");
+        return user;
+    }
 
     public static void TestUserService(UserService userService)
     {
@@ -70,48 +74,60 @@ internal class Program
         playListService.RemoveMediaFromList(playlist.Id, media.Id);
     }
 
+    public static void TestPlaylistControService(Database db,UserNotification userNotification,User user){
+        // PlayList control service
+        var playlist=db._playlists.First();
+        var audio=db._media.First(m=>m.Type==MediaType.Audio);
+        var video=db._media.First(m=>m.Type==MediaType.Video);
+        var playListController = new PlayListControlService(playlist, user);
+        playListController.Attach(userNotification);
+
+        // play,stop,pause playlist
+        playListController.PlayPlaylist();
+        playListController.StopPlaylist();
+        playListController.PausePlaylist();
+
+        // change sound effect or brightness
+        playListController.ChangeSoundEffect(audio,SoundEffectType.Zing);
+        playListController.ChangeSoundEffect(video, SoundEffectType.Whirr);
+        playListController.ChangeBrightness(audio, 4);
+        playListController.ChangeBrightness(video, 10);
+        playListController.ChangeBrightness(video, 11);
+        playListController.ChangeBrightness(video, -1);
+    }
+
     private static void Main(string[] args)
     {
-        Console.WriteLine("##############Set up test##############\n");
+        // setup test
         var db = Database.GetDatabase();
-        var admin = CreateAdmin();
         var adminNotification = new AdminNotification();
         var userNotification = new UserNotification();
 
-        //Console.WriteLine("##############Test user service##############\n");
-        //var userRepo = new UserRepository(db);
-        //var userService = new UserService(userRepo, admin);
-        //userService.Attach(adminNotification);
+        var admin=CreateAdmin();
+        var user=CreateTestUser();
 
-        //TestUserService(userService);
+        Console.WriteLine("##############Test user service##############\n");
+        var userRepo = new UserRepository(db);
+        var userService = new UserService(userRepo, admin);
+        userService.Attach(adminNotification);
 
-        //Console.WriteLine("\n##############Test media service##############\n");
-        //var mediaRepo = new MediaRepository(db);
-        //var mediaService = new MediaService(mediaRepo, admin);
-        //mediaService.Attach(adminNotification);
+        TestUserService(userService);
 
-        //TestMediaService(mediaService);
+        Console.WriteLine("\n##############Test media service##############\n");
+        var mediaRepo = new MediaRepository(db);
+        var mediaService = new MediaService(mediaRepo, admin);
+        mediaService.Attach(adminNotification);
 
-        //// Test playlist service
+        TestMediaService(mediaService);
+
+        // Test playlist service
         var playListRepo = new PlaylistRepository(db);
-        var user = db._users.First();
         var playListService = new PlayListService(playListRepo, user);
         playListService.Attach(userNotification);
         TestPlayListService(playListService, user, db);
 
-        //// PlayList control service
-        //var playListController = new PlayListControlService(playlsit, user);
-        //playListController.Attach(userNotification);
-
-        //// play,stop,pause playlist
-        //playListController.PlayPlaylist();
-        //playListController.StopPlaylist();
-        //playListController.PausePlaylist();
-
-        //// change sound effect or brightness
-        //playListController.ChangeSoundEffect(audio, "base");
-        //playListController.ChangeSoundEffect(video, "base");
-        //playListController.ChangeBrightness(audio, "bright");
-        //playListController.ChangeBrightness(video, "bright");
+        // test playlist control
+        TestPlaylistControService(db,userNotification,user);
+        
     }
 }
