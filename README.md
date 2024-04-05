@@ -1,19 +1,104 @@
-# Media Player Application
+# Design Principles
 
-Build a media player application that demonstrates advanced topics in C# programming, including SOLID principles, Clean architecture, Factory pattern, Singleton pattern, Observer pattern, object lifetime, and thread safety.
+The project follows Clean Architecture principles, which separates the application into three layers: Core, Service, and Infrastructure.
 
-## Features
+## Core Layer
+This layer contains the domain entities, interfaces, and enums.
 
-The media player application is a robust software which contains collections of different media files and users. Each user could create their own playtracks and perform other actions on the media file in their playtracks. One user can have multiple playtracks. Application should not have identical users.
+### Abstractions
+- `INofity` interface defines the shape of global notification.
+- `IMediaPlayerMonitor` interface defines the shape of the media player status observer.
+- `IAudioble` and `IVideoable` interfaces define the shape of the audio and video media files.
 
-- Only Admins of the application should be able to add, remove, update, delete all the files and users in the application.
-- Users should be able to manage their playtracks, including adding, removing, playing, pausing, stopping the media files.
-- Media files can be further adjusted while playing:
-    - Videos can change volume, brightness (can simply use `int` or `string`)
-    - Audios can change volume, sound effect (can simply use `int` or `string`)
-- Handle potential errors and exceptions gracefully, providing meaningful error messages to the user.
+### RepositoryAbstractions
+These abstractions define the shape of the repositories that manage the user, media and playlists in the application.
 
-## Requirement:
+They are implemented in the Infrastructure layer.
 
-- Design a solid and clean architecture for the media player application.
-- While all instances of database, repositories, services, controllers could be initiated in `Program.cs`, all functionalities should be handled via controllers only.
+### Entities
+- A base `User` class that contains the common properties of all users.
+- `User` class has a `virtual` property `UserType` that can be overridden by derived classes.
+- `Admin` class inherits from `User` class and overrides the `UserType` property.
+- An abstract `Media` class that contains the common properties of all media files. this class should not be directly instantiated.
+- `Video` and `Audio` classes inherit from the `Media` class. Each class implements the `MediaType` property.
+- `Video` and `Audio` classes implement the `IVideoable` and `IAudioble` interface respectly.
+- A `PlayList` class that contains the common properties of all playtracks.
+- UserNotification Entity and AdminNotification Entity
+
+### Enums
+All Enums are kept in this layer.
+
+### Utils
+Helper classes such as validator.
+
+## Service Layer
+This layer contains the business logic of the application.
+- DTO => defines the shape of Data transfer among different layers.
+- Service => deals with business logic, all the validation, and transformation should be done here.
+- Utils => Helper classes such as factory functions.
+
+### More on Service
+- `MediaService` and `UserService` are only accessable by Admins. This is achieved through mandotary Admin injection. 
+- Media repository and user repository are also injected as dependencies of each service.
+- Data validation and business logic are handled in the service layer, but CRUD operations are communicated in the repository layer.
+- `PlayListService` deals the CRUD operations of playlists.
+- `PlaylistControlService` deals with the play, pause, stop operations of the playtracks.
+
+
+## Infrastructure Layer
+This is the outermost layer of the application.
+- It contains the entry point to the application - `Program.cs`.
+- Data from external sources such as databases is accessed in this layer.
+- The implementation of the repositories is in this layer.
+
+## Summary
+The application data is an one-way flow from the Infrastructure layer to the Core layer. The Service layer is responsible for the business logic and data transformation that sits inbetween the Core and Infrastructure layers.
+
+
+
+## SOLID Principles
+- Single Responsibility Principle: each class is responsible for a single task.
+- Open/Closed Principle: the classes are open for extension but closed for modification. For instance, the `User` class is open for extension by derived classes but closed for modification.
+- Liskov Substitution Principle: derived classes can be substituted for their base classes. For instance, the `Audio` class can be substituted for the `Media` class.
+- Interface Segregation Principle: the interfaces are specific to the classes that use them. For instance, the `IVideoable` and `IAudioble` interfaces are specific to the `Video` and `Audio` classes.
+- Dependency Inversion Principle: the high-level modules depend on abstractions, not on concrete implementations. For instance, the `MediaService` class depends on the `IMediaRepository` interface, not on the `MediaRepository` class.
+
+## Factory Pattern
+- Create a `MediaFactory` class that creates a media object based on the media type.
+- Create a `UserFactory` class that creates a user object based on the user type.
+- Create a `PlayListFactory` class that creates a playtrack object.
+
+
+
+### Useful tools
+
+**Create project references** 
+- create solution folder: `dotnet new sln -o MySolution`
+- create project inside solution (for example, classlib templete ): 
+`dotnet new classlib -o MySolution.Project1`
+- Add Projects to the Solution: `dotnet sln add MySolution.Project1`
+- add reference (dependency) for a project (if you are in solution directory): `dotnet add  MySolution.Project1  reference MySolution.Project2` (now Project1 can use classes from Project2). 
+- Or add multiple reference to one project: 
+`dotnet add reference lib1/lib1.csproj lib2/lib2.csproj`
+
+- List reference
+  `dotnet list [<PROJECT>] reference`
+
+- Remove references
+
+```
+dotnet remove [<PROJECT>] reference [-f|--framework <FRAMEWORK>]
+     <PROJECT_REFERENCES>
+```
+
+## Other notes
+
+## Interface vs. Abstract Class
+If the classes that use the interface or abstract class share common implementation, an abstract class is a better choice. If the classes will implment the interface seperately, then an interface is more appropriate.
+
+## Service layer
+It deals with data transformation and validation, it shouldn't deal with source.
+The source should come from the repositorary interface in the core. 
+Dependency injection is the preferred way to do it.
+
+
