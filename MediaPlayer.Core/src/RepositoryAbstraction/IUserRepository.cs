@@ -9,5 +9,6 @@ namespace MediaPlayer.Core.src.RepositoryAbstraction
         public User? GetUserByName(string name);
         public void Remove(User user);
         public void RemoveAll();
+        public void Update(User user,string?email,string?fullName);
     }
 }

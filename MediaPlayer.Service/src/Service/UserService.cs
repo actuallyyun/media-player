@@ -75,8 +75,8 @@ namespace MediaPlayer.Service.Service
                 Notify("Cannot update user: user not found");
                 return false;
             }
-            Notify("User updated");
-            userFound.Update(userUpdate.Email, userUpdate.FullName);
+            Notify("User updated.");
+            _userRepository.Update(userFound,userUpdate.Email, userUpdate.FullName);
             return true;
         }
 

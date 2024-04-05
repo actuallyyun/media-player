@@ -37,5 +37,9 @@ namespace MediaPlayer.Infrastructure.src.Repository
             _users.Clear();
         }
 
+        public void Update(User user, string? email, string? fullName)
+        {
+           user.Update(email,fullName);
+        }
     }
 }
