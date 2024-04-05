@@ -28,7 +28,7 @@ namespace MediaPlayer.Service.src.Service
                 Media? newMedia = mediaFactory.Create(mediaCreate);
                 if (newMedia is not null)
                 {
-                    _mediaRepository.CreateNewMedia(newMedia);
+                    _mediaRepository.Add(newMedia);
                     Notify($"A new media is created:{newMedia}");
                 }
                 else
@@ -76,7 +76,7 @@ namespace MediaPlayer.Service.src.Service
                 Notify("Cannot update: invalid year");
                 return false;
             }
-            mediaFound.Update(mediaUpdate.Title,mediaUpdate.Artist,mediaUpdate.Year);
+            _mediaRepository.Update(mediaFound,mediaUpdate.Title,mediaUpdate.Artist,mediaUpdate.Year);
             Notify("Update successful!");
             return true;
 

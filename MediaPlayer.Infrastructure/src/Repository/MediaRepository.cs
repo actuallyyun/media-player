@@ -11,29 +11,14 @@ namespace MediaPlayer.Infrastructure.src.Repository
             _meida=database._media;
         }
 
-        public void CreateNewMedia(Media media)
+        public void Add(Media media)
         {
             _meida.Add(media);
-        }
-
-        public IEnumerable<Media> GetAllMedia()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Media>? GetMediaByArtist(string artist)
-        {
-            throw new NotImplementedException();
         }
 
         public Media? GetMediaById(Guid id)
         {
             return _meida.FirstOrDefault(m=>m.Id==id);
-        }
-
-        public IEnumerable<Media>? GetMediaByTitle(string title)
-        {
-            throw new NotImplementedException();
         }
 
         public void Remove(Media media)
@@ -44,9 +29,5 @@ namespace MediaPlayer.Infrastructure.src.Repository
             _meida.Clear();
         }
 
-        public void UpdateMedia(Media media)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
