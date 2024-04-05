@@ -13,7 +13,7 @@ namespace MediaPlayer.Infrastructure.src.Repository
             _playlists = database._playlists;
         }
 
-        public void AddPlaylist(PlayList playlist)
+        public void Add(PlayList playlist)
         {
             _playlists.Add(playlist);
         }
@@ -23,29 +23,15 @@ namespace MediaPlayer.Infrastructure.src.Repository
             return _playlists.Where(p => p.IsPrivate == false).ToList();
         }
 
-        public IEnumerable<PlayList>? GetPlaylistByName(string name)
-        {
-            throw new NotImplementedException();
-        }
-
         public PlayList? GetPlayListById(Guid id)
         {
             return _playlists.FirstOrDefault(p => p.Id == id);
         }
 
-        public HashSet<PlayList> GetPlayListsByOwnerId(Guid id)
+        public void Remove(PlayList playlist)
         {
-            return _playlists.Where(p => p.OwnerId == id).ToHashSet();
+            _playlists.Remove(playlist);
         }
 
-        public void RemovePlaylistById(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdatePlaylist(PlayList playlist)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

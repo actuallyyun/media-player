@@ -37,7 +37,7 @@ namespace MediaPlayer.Service.src.Service
             var newPlayList = playListFactory.Create(playListCreate);
             if (newPlayList is not null)
             {
-                _playListRepository.AddPlaylist(newPlayList);
+                _playListRepository.Add(newPlayList);
                 _user.AddPlaylist(newPlayList);
                 Notify($"New playlist created:{newPlayList}.");
             }
@@ -95,6 +95,7 @@ namespace MediaPlayer.Service.src.Service
                 return false;
             }
             _user.DeletePlaylist(playList);
+            _playListRepository.Remove(playList);
             Notify($"Successfully removed playlist:{playList}");
             return true;
         }
