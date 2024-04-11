@@ -1,20 +1,21 @@
 using MediaPlayer.Service.src.DTO;
 using MediaPlayer.Core.src.Enums;
 using Microsoft.VisualBasic;
+using MediaPlayer.Core.src.Entity;
 
 namespace MediaPlayer.Tests.src.Service
 {
     public static class TestUtils
     {
         
-        public static MediaCreateDto invalidYear1 = new MediaCreateDto(
+        public static MediaCreateDto InvalidYear1 = new MediaCreateDto(
             MediaType.Audio,
             "test audio",
             "artist",
             20
         );
 
-        public static MediaCreateDto invalidYear2 = new MediaCreateDto(
+        public static MediaCreateDto InvalidYear2 = new MediaCreateDto(
             MediaType.Audio,
             "test audio",
             "artist",
@@ -22,8 +23,10 @@ namespace MediaPlayer.Tests.src.Service
         );
 
         public static IEnumerable<object[]> InvalidMediaData => [
-                new object[] { invalidYear1 },
-                new object[] { invalidYear2 }
+                new object[] { InvalidYear1 },
+                new object[] { InvalidYear2 }
             ];
+
+        public static Media Media1=>new Audio("audio1","audio",2000);
     }
 }

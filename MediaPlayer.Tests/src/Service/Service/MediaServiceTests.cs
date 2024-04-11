@@ -1,3 +1,4 @@
+using System.Security.Principal;
 using MediaPlayer.Core.src.Abstraction;
 using MediaPlayer.Core.src.Entity;
 using MediaPlayer.Core.src.Enums;
@@ -10,7 +11,7 @@ namespace MediaPlayer.Tests.src.Service.Service
 {
     public class MediaServiceTests
     {
-        public static IEnumerable<object[]> InvalidMediaData=>TestUtils.InvalidMediaData;
+        public static IEnumerable<object[]> InvalidMediaData => TestUtils.InvalidMediaData;
 
         private readonly MediaService _service; // SUT -> s
 
@@ -29,7 +30,6 @@ namespace MediaPlayer.Tests.src.Service.Service
         public MediaServiceTests()
         {
             _mockMediaRepo.Setup(service => service.Add(It.IsAny<Media>()));
-
         }
 
         [Fact]
@@ -49,6 +49,53 @@ namespace MediaPlayer.Tests.src.Service.Service
 
             var result = mediaService.AddMedia(invalidMediaData);
             Assert.Null(result);
+        }
+
+        [Fact]
+        public void DeleteMediaById_WhenMediaFound_ShouldReturnTrue()
+        {
+            _mockMediaRepo
+                .Setup(repo => repo.GetMediaById(It.IsAny<Guid>()))
+                .Returns(TestUtils.Media1);
+            var mediaService = new MediaService(_mockMediaRepo.Object, _mockAdmin.Object);
+            var result = mediaService.DeleteMediaById(Guid.NewGuid());
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void DeleteMediaById_WhenMediaNotFound_ShouldReturnFalse()
+        {
+            Media? media = null;
+            _mockMediaRepo.Setup(repo => repo.GetMediaById(It.IsAny<Guid>())).Returns(media);
+            var mediaService = new MediaService(_mockMediaRepo.Object, _mockAdmin.Object);
+            var result = mediaService.DeleteMediaById(Guid.NewGuid());
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void UpdateMedia_WithValidData_ShouldReturnTrue()
+        {
+            Guid id = Guid.NewGuid();
+            MediaUpdateDto mediaUpdate = new MediaUpdateDto("update", null, 2006);
+            _mockMediaRepo
+                .Setup(repo => repo.GetMediaById(It.IsAny<Guid>()))
+                .Returns(It.IsAny<Media>);
+            var mediaService = new MediaService(_mockMediaRepo.Object, _mockAdmin.Object);
+            var result = mediaService.UpdateMedia(id, mediaUpdate);
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void UpdateMedia_WithInValidData_ShouldReturnFalse()
+        {
+            Guid id = Guid.NewGuid();
+            MediaUpdateDto mediaUpdate = new MediaUpdateDto("update", null, 2);
+            _mockMediaRepo
+                .Setup(repo => repo.GetMediaById(It.IsAny<Guid>()))
+                .Returns(It.IsAny<Media>);
+            var mediaService = new MediaService(_mockMediaRepo.Object, _mockAdmin.Object);
+            var result = mediaService.UpdateMedia(id, mediaUpdate);
+            Assert.False(result);
         }
     }
 }
