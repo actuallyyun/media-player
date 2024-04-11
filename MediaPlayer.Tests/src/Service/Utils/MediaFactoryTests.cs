@@ -4,11 +4,13 @@ using MediaPlayer.Service.src.DTO;
 using MediaPlayer.Service.src.Utils;
 using Microsoft.VisualBasic;
 
+
 namespace MediaPlayer.Tests.src.Service.Utils
+
 {
     public class MediaFactoryTests
     {
-        public static IEnumerable<object[]> InvalidYearData { get; set; }
+        public static IEnumerable<object[]> InvalidMediaData=>TestUtils.InvalidMediaData;
         static MediaCreateDto testVideo = new MediaCreateDto(
             MediaType.Video,
             "test video",
@@ -21,27 +23,6 @@ namespace MediaPlayer.Tests.src.Service.Utils
             "artist",
             2000
         );
-
-        public static MediaCreateDto invalidYear1 = new MediaCreateDto(
-            MediaType.Audio,
-            "test audio",
-            "artist",
-            20
-        );
-
-        public static MediaCreateDto invalidYear2 = new MediaCreateDto(
-            MediaType.Audio,
-            "test audio",
-            "artist",
-            DateAndTime.Now.AddYears(10).Year
-        );
-
-        //public static IEnumerable<object[]> InvalidYearMediaData => [[invalidYear1, invalidYear2]];
-
-        static MediaFactoryTests()
-        {
-            InvalidYearData = [new object[] { invalidYear1 }, new object[] { invalidYear2 }];
-        }
 
         [Fact]
         public void Create_WithVideoType_ShouldReturnVideoObject()
@@ -60,7 +41,7 @@ namespace MediaPlayer.Tests.src.Service.Utils
         }
 
         [Theory]
-        [MemberData(nameof(InvalidYearData))]
+        [MemberData(nameof(InvalidMediaData))]
         public void Create_WithInvalidYear_ShouldThrowError(MediaCreateDto invalidYear)
         {
             var expectionType = typeof(ArgumentException);
