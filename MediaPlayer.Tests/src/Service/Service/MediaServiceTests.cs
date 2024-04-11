@@ -79,7 +79,7 @@ namespace MediaPlayer.Tests.src.Service.Service
             MediaUpdateDto mediaUpdate = new MediaUpdateDto("update", null, 2006);
             _mockMediaRepo
                 .Setup(repo => repo.GetMediaById(It.IsAny<Guid>()))
-                .Returns(It.IsAny<Media>);
+                .Returns(TestUtils.Media1);
             var mediaService = new MediaService(_mockMediaRepo.Object, _mockAdmin.Object);
             var result = mediaService.UpdateMedia(id, mediaUpdate);
             Assert.True(result);
@@ -92,7 +92,7 @@ namespace MediaPlayer.Tests.src.Service.Service
             MediaUpdateDto mediaUpdate = new MediaUpdateDto("update", null, 2);
             _mockMediaRepo
                 .Setup(repo => repo.GetMediaById(It.IsAny<Guid>()))
-                .Returns(It.IsAny<Media>);
+                .Returns(TestUtils.Media1);
             var mediaService = new MediaService(_mockMediaRepo.Object, _mockAdmin.Object);
             var result = mediaService.UpdateMedia(id, mediaUpdate);
             Assert.False(result);
