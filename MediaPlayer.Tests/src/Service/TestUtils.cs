@@ -25,6 +25,7 @@ namespace MediaPlayer.Tests.src.Service
             [new object[] { InvalidYear1 }, new object[] { InvalidYear2 }];
 
         public static Media Media1 => new Audio("audio1", "audio", 2000);
+        public static Media Media2 => new Video("video", "audio", 2000);
         public static User User1 => new User("user", "user@mail.com", "User");
 
         public static UserCreateDto UserCreate = new UserCreateDto(
@@ -43,6 +44,7 @@ namespace MediaPlayer.Tests.src.Service
         public static UserUpdateDto invalidUserUpdate = new UserUpdateDto("usernoneexisting", null);
 
         public static PlayList User1Playlist1 = new PlayList(User1.Id, "playlist1", false);
+
         public static PlayList Playlist2 = new PlayList(Guid.NewGuid(), "playlist2", false);
 
         public static IEnumerable<PlayList> User1Playlists = [User1Playlist1];
@@ -61,9 +63,20 @@ namespace MediaPlayer.Tests.src.Service
             new object[] { InvalidUserIdPlaylistCreate },
             new object[] { InvalidExisitingTitlePlaylistCreate }
         ];
-        public static IEnumerable<object[]>InvalidPlaylistAddByIdData=[
+        public static IEnumerable<object[]> InvalidPlaylistAddByIdData =
+        [
             new object[] { Guid.NewGuid() },
-            new object[] {User1Playlist1.Id}
+            new object[] { User1Playlist1.Id }
         ];
+
+        public static void PopulateUserPlaylist()
+        {
+            User1.AddPlaylist(User1Playlist1);
+            User1.AddPlaylist(Playlist2);
+            User1Playlist1.AddToList(Media1);
+        }
+        
+
+
     }
 }

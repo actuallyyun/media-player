@@ -9,11 +9,13 @@ namespace MediaPlayer.Tests.src.Service.Service
     public class PlayListServiceTests
     {
         private Mock<IPlaylistRepository> _mockPlayListRepository = new Mock<IPlaylistRepository>();
-        private User _user;
+        private User _user;// Cannot mock user since it is not an interface. Mocking requires code base change. User a test user istead
         public static IEnumerable<object[]> InvalidPlaylistCreateData =>
             TestUtils.InvalidPlaylistCreateData;
 
-public static IEnumerable<object[]>  InvalidPlaylistAddByIdData=>TestUtils.InvalidPlaylistAddByIdData;
+        public static IEnumerable<object[]> InvalidPlaylistAddByIdData =>
+            TestUtils.InvalidPlaylistAddByIdData;
+
         public PlayListServiceTests()
         {
             _user = TestUtils.User1;
@@ -81,7 +83,7 @@ public static IEnumerable<object[]>  InvalidPlaylistAddByIdData=>TestUtils.Inval
         [MemberData(nameof(InvalidPlaylistAddByIdData))]
         public void AddPlaylistById_WithInvalidData_ShouldNotAddAndReturnFalse(Guid id)
         {
-            PlayList? playlist=null;
+            PlayList? playlist = null;
             _mockPlayListRepository.Setup(x => x.GetPlayListById(id)).Returns(playlist);
             var playlistService = new PlayListService(_mockPlayListRepository.Object, _user);
             var result = playlistService.AddPlaylistById(id);
@@ -89,6 +91,29 @@ public static IEnumerable<object[]>  InvalidPlaylistAddByIdData=>TestUtils.Inval
             _mockPlayListRepository.Verify(
                 x => x.AddToUserPlaylist(It.IsAny<User>(), It.IsAny<PlayList>()),
                 Times.Never
+            );
+        }
+
+        [Fact]
+        public void AddMediaToPlayList_WithValidData_ShouldAddAndReturnTrue()
+        {
+            
+            TestUtils.PopulateUserPlaylist();
+            var playlistId = TestUtils.User1Playlist1.Id;
+            Media? media = null;
+            _mockPlayListRepository
+                .Setup(x => x.GetMediaInPlaylistById(playlistId, TestUtils.Media1.Id))
+                .Returns(media);
+            _mockPlayListRepository.Setup(x =>
+                x.AddMediaToPlaylist(It.IsAny<PlayList>(), It.IsAny<Media>())
+            );
+            var playlistService = new PlayListService(_mockPlayListRepository.Object, _user);
+
+            var result = playlistService.AddMediaToPlayList(playlistId, TestUtils.Media2);
+            Assert.True(result);
+            _mockPlayListRepository.Verify(
+                x => x.AddMediaToPlaylist(It.IsAny<PlayList>(), It.IsAny<Media>()),
+                Times.Once
             );
         }
     }
