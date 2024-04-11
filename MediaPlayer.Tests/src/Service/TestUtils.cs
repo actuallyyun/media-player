@@ -41,5 +41,29 @@ namespace MediaPlayer.Tests.src.Service
         );
         public static UserUpdateDto validUserUpdate = new UserUpdateDto("user1", null);
         public static UserUpdateDto invalidUserUpdate = new UserUpdateDto("usernoneexisting", null);
+
+        public static PlayList User1Playlist1 = new PlayList(User1.Id, "playlist1", false);
+        public static PlayList Playlist2 = new PlayList(Guid.NewGuid(), "playlist2", false);
+
+        public static IEnumerable<PlayList> User1Playlists = [User1Playlist1];
+        public static PlayListCreateDTO InvalidUserIdPlaylistCreate = new PlayListCreateDTO(
+            Guid.NewGuid(),
+            "playlist create",
+            false
+        );
+        public static PlayListCreateDTO InvalidExisitingTitlePlaylistCreate = new PlayListCreateDTO(
+            User1.Id,
+            "playlist1",
+            false
+        );
+        public static IEnumerable<object[]> InvalidPlaylistCreateData =
+        [
+            new object[] { InvalidUserIdPlaylistCreate },
+            new object[] { InvalidExisitingTitlePlaylistCreate }
+        ];
+        public static IEnumerable<object[]>InvalidPlaylistAddByIdData=[
+            new object[] { Guid.NewGuid() },
+            new object[] {User1Playlist1.Id}
+        ];
     }
 }
