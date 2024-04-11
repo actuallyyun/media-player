@@ -12,11 +12,6 @@ namespace MediaPlayer.Tests.src.Service.Service
     public class MediaServiceTests
     {
         public static IEnumerable<object[]> InvalidMediaData => TestUtils.InvalidMediaData;
-
-        private readonly MediaService _service; // SUT -> s
-
-        private Mock<List<INotify>> _mockObservers = new Mock<List<INotify>>();
-
         private Mock<IMediaRepository> _mockMediaRepo = new Mock<IMediaRepository>();
 
         private Mock<Admin> _mockAdmin = new Mock<Admin>("admin", "admin", "Admin");

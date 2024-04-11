@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediaPlayer.Core.src.Enums;
 using MediaPlayer.Service.src.Utils;
-using Xunit;
 
 namespace MediaPlayer.Tests.src.Service.Utils
 {
