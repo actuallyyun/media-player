@@ -6,6 +6,7 @@ namespace MediaPlayer.Core.src.RepositoryAbstraction
     {
         public IEnumerable<PlayList> GetAllPublicPlaylists();
         public PlayList? GetPlayListById(Guid id);
+        public IEnumerable<PlayList> GetPlaylistsByOwnerId(Guid id);
         public PlayList? GetUserPlaylistById(Guid userId, Guid id);
         public PlayList? GetUserPlaylistByName(Guid userId, string name);
         public Media? GetMediaInPlaylistById(Guid playlistId, Guid mediaId);

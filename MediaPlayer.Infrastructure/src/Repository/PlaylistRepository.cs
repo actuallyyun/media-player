@@ -47,6 +47,11 @@ namespace MediaPlayer.Infrastructure.src.Repository
             return _playlists.FirstOrDefault(p => p.Id == id);
         }
 
+        public IEnumerable<PlayList> GetPlaylistsByOwnerId(Guid id)
+        {
+            return _playlists.Where(p=>p.OwnerId==id);
+        }
+
         public PlayList? GetUserPlaylistById(Guid userId, Guid id)
         {
             return _playlists.FirstOrDefault(p=>p.OwnerId==userId&&p.Id==id);

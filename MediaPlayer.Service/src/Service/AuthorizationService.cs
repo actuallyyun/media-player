@@ -16,6 +16,8 @@ namespace MediaPlayer.Service.src.Service
 
         public string UserName => _currentUser.FullName;
 
+        public User GetUser()=>_currentUser;
+
         public bool HasPermission(UserType typeRequired)
         {
             if(_currentUser.Type==UserType.Admin){ // Admin has full access to all
