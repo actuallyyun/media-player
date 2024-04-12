@@ -1,29 +1,61 @@
+using MediaPlayer.Core.src.Abstraction;
 using MediaPlayer.Core.src.Entity;
 using MediaPlayer.Core.src.Enums;
 using MediaPlayer.Core.src.RepositoryAbstraction;
 using MediaPlayer.Service.Service;
 using MediaPlayer.Service.src.DTO;
+using MediaPlayer.Service.src.ServiceAbstraction;
 using Moq;
 
 namespace MediaPlayer.Tests.src.Service.Service
 {
     public class UserServiceTests
     {
-
-        public static IEnumerable<object[]> ValidUserCreateData =>
-            TestUtils.ValidUserCreateData;
+        public static IEnumerable<object[]> ValidUserCreateData => TestUtils.ValidUserCreateData;
         private Mock<IUserRepository> _mockUserRepo = new Mock<IUserRepository>();
 
-        private Mock<Admin> _mockAdmin = new Mock<Admin>("admin", "admin", "Admin");
+        private Mock<IAuthorizationService> _mockAuthorizationService =
+            new Mock<IAuthorizationService>();
+        private Mock<IMediaPlayerMonitor> _mockNotificationService =
+            new Mock<IMediaPlayerMonitor>();
+
+        public UserServiceTests()
+        {
+            _mockAuthorizationService.Setup(x => x.IsAuthenticated).Returns(true);
+            _mockAuthorizationService
+                .Setup(x => x.HasPermission(It.IsAny<UserType>()))
+                .Returns(true);
+        }
+
+        [Fact]
+        public void Instantiate_WithUnauthorizedCredentials_ShouldThrowExpection()
+        {
+            _mockAuthorizationService.Setup(x => x.IsAuthenticated).Returns(false);
+            _mockAuthorizationService
+                .Setup(x => x.HasPermission(It.IsAny<UserType>()))
+                .Returns(false);
+            var ex =Assert.Throws<UnauthorizedAccessException>(()=>new UserService(
+                _mockUserRepo.Object,
+                _mockNotificationService.Object,
+                _mockAuthorizationService.Object
+            ));
+            Assert.Contains("Unauthorized", ex.Message);
+        }
 
         [Theory]
         [MemberData(nameof(ValidUserCreateData))]
-        public void AddUser_WithValidUData_ShouldAddAndReturnCorrectUserType(UserCreateDto userCreate)
+        public void AddUser_WithValidUData_ShouldAddAndReturnCorrectUserType(
+            UserCreateDto userCreate
+        )
         {
             var testUserName = "test";
             User? userFound = null;
             _mockUserRepo.Setup(x => x.GetUserByName(testUserName)).Returns(userFound);
-            var userService = new UserService(_mockUserRepo.Object, _mockAdmin.Object);
+            var userService = new UserService(
+                _mockUserRepo.Object,
+                _mockNotificationService.Object,
+                _mockAuthorizationService.Object
+            );
             var result = userService.AddUser(userCreate);
             Assert.Equal(userCreate.Type, result.Type);
             Assert.Equal(result.Username, userCreate.Username);
@@ -36,7 +68,11 @@ namespace MediaPlayer.Tests.src.Service.Service
             _mockUserRepo
                 .Setup(x => x.GetUserByName(TestUtils.UserCreate.Username))
                 .Returns(TestUtils.User1);
-            var userService = new UserService(_mockUserRepo.Object, _mockAdmin.Object);
+            var userService = new UserService(
+                _mockUserRepo.Object,
+                _mockNotificationService.Object,
+                _mockAuthorizationService.Object
+            );
             var result = userService.AddUser(TestUtils.UserCreate);
             Assert.Null(result);
             _mockUserRepo.Verify(x => x.Add(It.IsAny<User>()), Times.Never);
@@ -48,7 +84,11 @@ namespace MediaPlayer.Tests.src.Service.Service
             var id = Guid.NewGuid();
             _mockUserRepo.Setup(x => x.GetUserById(id)).Returns(TestUtils.User1);
             _mockUserRepo.Setup(x => x.Remove(TestUtils.User1));
-            var userService = new UserService(_mockUserRepo.Object, _mockAdmin.Object);
+            var userService = new UserService(
+                _mockUserRepo.Object,
+                _mockNotificationService.Object,
+                _mockAuthorizationService.Object
+            );
             var result = userService.DeleteUserById(id);
             Assert.True(result);
             _mockUserRepo.Verify(); // Assert both mocked repo methods should be called with provided parameters
@@ -60,8 +100,11 @@ namespace MediaPlayer.Tests.src.Service.Service
             var id = Guid.NewGuid();
             User? user = null;
             _mockUserRepo.Setup(x => x.GetUserById(id)).Returns(user);
-            var userService = new UserService(_mockUserRepo.Object, _mockAdmin.Object);
-            var result = userService.DeleteUserById(id);
+            var userService = new UserService(
+                _mockUserRepo.Object,
+                _mockNotificationService.Object,
+                _mockAuthorizationService.Object
+            );            var result = userService.DeleteUserById(id);
             Assert.False(result);
             _mockUserRepo.Verify(x => x.Remove(It.IsAny<User>()), Times.Never); // Assert Remove not be called
         }
@@ -71,8 +114,11 @@ namespace MediaPlayer.Tests.src.Service.Service
         {
             var id = Guid.NewGuid();
             _mockUserRepo.Setup(x => x.GetUserById(id)).Returns(TestUtils.User1);
-            var userService = new UserService(_mockUserRepo.Object, _mockAdmin.Object);
-            var result = userService.UpdateUser(id, TestUtils.validUserUpdate);
+            var userService = new UserService(
+                _mockUserRepo.Object,
+                _mockNotificationService.Object,
+                _mockAuthorizationService.Object
+            );            var result = userService.UpdateUser(id, TestUtils.validUserUpdate);
             Assert.True(result);
             _mockUserRepo.Verify();
         }
@@ -83,8 +129,11 @@ namespace MediaPlayer.Tests.src.Service.Service
             var id = Guid.NewGuid();
             User? user = null;
             _mockUserRepo.Setup(x => x.GetUserById(id)).Returns(user);
-            var userService = new UserService(_mockUserRepo.Object, _mockAdmin.Object);
-            var result = userService.UpdateUser(id, TestUtils.validUserUpdate);
+            var userService = new UserService(
+                _mockUserRepo.Object,
+                _mockNotificationService.Object,
+                _mockAuthorizationService.Object
+            );            var result = userService.UpdateUser(id, TestUtils.validUserUpdate);
             Assert.False(result);
             _mockUserRepo.Verify(
                 x =>

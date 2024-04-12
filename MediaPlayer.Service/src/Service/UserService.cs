@@ -1,22 +1,28 @@
 using MediaPlayer.Core.src.Abstraction;
 using MediaPlayer.Core.src.Entity;
+using MediaPlayer.Core.src.Enums;
 using MediaPlayer.Core.src.RepositoryAbstraction;
 using MediaPlayer.Service.src.DTO;
+using MediaPlayer.Service.src.Service;
 using MediaPlayer.Service.src.Utils;
+using MediaPlayer.Service.src.ServiceAbstraction;
 
 namespace MediaPlayer.Service.Service
 {
-    public class UserService : IMediaPlayerMonitor
+    public class UserService 
     {
-        private List<INotify> _observers = new List<INotify>();
-        private IUserRepository _userRepository;
-        private Admin _admin;
+        private readonly IMediaPlayerMonitor _notificationService;
+        private  readonly IUserRepository _userRepository;
+        private readonly IAuthorizationService _authorizationService;
 
-        public UserService(IUserRepository userRepo, Admin admin)
-        { // must provide admin to create service instance
+        public UserService(IUserRepository userRepo, IMediaPlayerMonitor notificationService,IAuthorizationService authorizationService)
+        { 
             _userRepository = userRepo;
-            _admin = admin;
-            Notify($"A new user service is created by {_admin}");
+            _notificationService=notificationService;
+            if(!authorizationService.IsAuthenticated ||!authorizationService.HasPermission(UserType.Admin)){
+                throw new UnauthorizedAccessException("Unauthorized action.");
+            }
+            _authorizationService = authorizationService;
         }
 
         public User? AddUser(UserCreateDto userCreate)
@@ -24,7 +30,7 @@ namespace MediaPlayer.Service.Service
             var userFound = GetUserByName(userCreate.Username);
             if (userFound is not null)
             { // username must be unique
-                Notify("Invalid username.");
+                _notificationService.Notify("Invalid username.");
                 return null;
             }
             var useFactory = new UserFactory();
@@ -32,11 +38,11 @@ namespace MediaPlayer.Service.Service
             if (newUser is not null)
             {
                 _userRepository.Add(newUser);
-                Notify($"A new user is created:{newUser}");
+                _notificationService.Notify($"A new user is created:{newUser} by {_authorizationService.UserName}");
             }
             else
             {
-                Notify("Failed to create user.");
+                _notificationService.Notify("Failed to create user.");
             }
             return newUser;
         }
@@ -52,10 +58,10 @@ namespace MediaPlayer.Service.Service
             var userFound = _userRepository.GetUserById(id);
             if (userFound is null)
             {
-                Notify("Cannot delete user: user not found");
+                _notificationService.Notify("Cannot delete user: user not found");
                 return false;
             }
-            Notify("User deleted.");
+            _notificationService.Notify($"User deleted by {_authorizationService.UserName}");
             _userRepository.Remove(userFound);
             return true;
         }
@@ -63,7 +69,7 @@ namespace MediaPlayer.Service.Service
         public bool DeleteAllUsers()
         {
             _userRepository.RemoveAll();
-            Notify("All users are removed");
+            _notificationService.Notify($"All users are removed by {_authorizationService.UserName}");
             return true;
         }
 
@@ -72,30 +78,12 @@ namespace MediaPlayer.Service.Service
             var userFound = _userRepository.GetUserById(id);
             if (userFound is null)
             {
-                Notify("Cannot update user: user not found");
+                _notificationService.Notify("Cannot update user: user not found");
                 return false;
             }
-            Notify("User updated.");
+            _notificationService.Notify($"User updated by {_authorizationService.UserName}");
             _userRepository.Update(userFound,userUpdate.Email, userUpdate.FullName);
             return true;
-        }
-
-        public void Attach(INotify observer)
-        {
-            _observers.Add(observer);
-        }
-
-        public void Detach(INotify observer)
-        {
-            _observers.Remove(observer);
-        }
-
-        public void Notify(string message)
-        {
-            foreach (var observer in _observers)
-            {
-                observer.Update(message);
-            }
         }
     }
 }
