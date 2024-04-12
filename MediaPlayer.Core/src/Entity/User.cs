@@ -2,13 +2,12 @@ using MediaPlayer.Core.src.Enums;
 
 namespace MediaPlayer.Core.src.Entity
 {
-    public class User 
+    public class User:BaseEntity 
     {
         public readonly string Username; // username must be unique and cannot be changed
         public string Email { get; set; }
         public string FullName { get; set; }
         public virtual UserType Type=>UserType.User; // Can be overridden by derived class Admin
-        public Guid Id;
         private HashSet<PlayList> _playlists;
         public readonly DateTime CreatedAt;
         public DateTime LastUpdatedAt;
@@ -18,7 +17,6 @@ namespace MediaPlayer.Core.src.Entity
             Username = username;
             Email = email;
             FullName = fullName;
-            Id = Guid.NewGuid();
             _playlists=[];
             CreatedAt = DateTime.Now;
         }

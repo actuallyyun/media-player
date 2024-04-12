@@ -1,10 +1,9 @@
 using MediaPlayer.Core.src.Utils;
-using Microsoft.VisualBasic;
 using MediaPlayer.Core.src.Enums;
 
 namespace MediaPlayer.Core.src.Entity
 {
-    public abstract class Media // mark it abstract so it cannot be instantiated
+    public abstract class Media:BaseEntity // mark it abstract so it cannot be instantiated
     {
         public abstract MediaType Type { get; }
         public string Title { get; set; }
@@ -12,8 +11,6 @@ namespace MediaPlayer.Core.src.Entity
         public int Year { get; set; }
 
         public int Volumn { get; set; }
-
-        public Guid Id { get; }
         public DateTime CreatedAt { get; }
         public DateTime LastUpdatedAt { get; set; }
 

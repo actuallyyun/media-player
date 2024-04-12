@@ -1,6 +1,6 @@
 namespace MediaPlayer.Core.src.Entity
 {
-    public class PlayList
+    public class PlayList:BaseEntity
     {
         public Guid OwnerId{get;}
         public string Name { get; set; }
@@ -8,7 +8,6 @@ namespace MediaPlayer.Core.src.Entity
         public bool IsPrivate { get; set; }
         public bool IsPlaying{get;set;} // default to false
         public bool IsPaused{get;set;}
-        public Guid Id{get;set;}
         public DateTime CreatedAt{get;set;}
         public DateTime LastUpdatedAt{get;set;}
 
@@ -18,7 +17,6 @@ namespace MediaPlayer.Core.src.Entity
             OwnerId=ownerId;
             Name = name;
             IsPrivate = isPrivate;
-            Id=Guid.NewGuid();
             IsPlaying=false;
             IsPaused=false;
             _mediaItems=[];
