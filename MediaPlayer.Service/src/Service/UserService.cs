@@ -3,7 +3,6 @@ using MediaPlayer.Core.src.Entity;
 using MediaPlayer.Core.src.Enums;
 using MediaPlayer.Core.src.RepositoryAbstraction;
 using MediaPlayer.Service.src.DTO;
-using MediaPlayer.Service.src.Service;
 using MediaPlayer.Service.src.Utils;
 using MediaPlayer.Service.src.ServiceAbstraction;
 

@@ -3,21 +3,26 @@ using MediaPlayer.Core.src.Entity;
 using MediaPlayer.Core.src.RepositoryAbstraction;
 using MediaPlayer.Core.src.Utils;
 using MediaPlayer.Service.src.DTO;
+using MediaPlayer.Service.src.ServiceAbstraction;
 using MediaPlayer.Service.src.Utils;
+using MediaPlayer.Core.src.Enums;
 
 namespace MediaPlayer.Service.src.Service
 {
-    public class MediaService : IMediaPlayerMonitor
+    public class MediaService
     {
-        private List<INotify> _observers = new List<INotify>();
         private IMediaRepository _mediaRepository;
-        private Admin _admin;
+        private readonly IMediaPlayerMonitor _notificationService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public MediaService(IMediaRepository mediaRepo, Admin admin)
-        { // must provide an admin to instantianize the service since this is admin only feature
+        public MediaService(IMediaRepository mediaRepo, IMediaPlayerMonitor notificationService, IAuthorizationService authorizationService)
+        { 
             _mediaRepository = mediaRepo;
-            _admin = admin;
-            Notify($"A new user service is created by {_admin}");
+            _notificationService=notificationService;
+            if(!authorizationService.IsAuthenticated ||!authorizationService.HasPermission(UserType.Admin)){
+                throw new UnauthorizedAccessException("Unauthorized action.");
+            }
+            _authorizationService = authorizationService;
         }
 
         public Media? AddMedia(MediaCreateDto mediaCreate)
@@ -29,17 +34,17 @@ namespace MediaPlayer.Service.src.Service
                 if (newMedia is not null)
                 {
                     _mediaRepository.Add(newMedia);
-                    Notify($"A new media is created:{newMedia}");
+                    _notificationService.Notify($"A new media is created:{newMedia}");
                 }
                 else
                 {
-                    Notify("Failed to create new media");
+                    _notificationService.Notify("Failed to create new media");
                 }
                 return newMedia;
             }
             catch (Exception e)
             {
-                Notify($"An error has occurred:{e.Message}");
+                _notificationService.Notify($"An error has occurred:{e.Message}");
                 return null;
             }
         }
@@ -49,18 +54,18 @@ namespace MediaPlayer.Service.src.Service
             var mediaFound = _mediaRepository.GetMediaById(id);
             if (mediaFound is null)
             {
-                Notify("Cannot delete.Media not found");
+                _notificationService.Notify("Cannot delete.Media not found");
                 return false;
             }
             _mediaRepository.Remove(mediaFound);
-            Notify($"Media removed: {mediaFound}");
+            _notificationService.Notify($"Media removed: {mediaFound}");
             return true;
         }
 
         public bool DeleteAllMedia()
         {
             _mediaRepository.RemoveAll();
-            Notify("All media is removed");
+            _notificationService.Notify("All media is removed");
             return true;
         }
 
@@ -69,35 +74,22 @@ namespace MediaPlayer.Service.src.Service
             var mediaFound = _mediaRepository.GetMediaById(id);
             if (mediaFound is null)
             {
-                Notify("Cannot update: media not found");
+                _notificationService.Notify("Cannot update: media not found");
                 return false;
             }
-            if(!Validator.IsValidYear(mediaUpdate.Year)){
-                Notify("Cannot update: invalid year");
-                return false;
-            }
-            _mediaRepository.Update(mediaFound,mediaUpdate.Title,mediaUpdate.Artist,mediaUpdate.Year);
-            Notify("Update successful!");
-            return true;
-
-        }
-
-        public void Attach(INotify observer)
-        {
-            _observers.Add(observer);
-        }
-
-        public void Detach(INotify observer)
-        {
-            _observers.Remove(observer);
-        }
-
-        public void Notify(string message)
-        {
-            foreach (var observer in _observers)
+            if (!Validator.IsValidYear(mediaUpdate.Year))
             {
-                observer.Update(message);
+                _notificationService.Notify("Cannot update: invalid year");
+                return false;
             }
+            _mediaRepository.Update(
+                mediaFound,
+                mediaUpdate.Title,
+                mediaUpdate.Artist,
+                mediaUpdate.Year
+            );
+            _notificationService.Notify("Update successful!");
+            return true;
         }
     }
 }
