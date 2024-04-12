@@ -14,7 +14,7 @@ namespace MediaPlayer.Tests.src.Service.Service
         public static IEnumerable<object[]> InvalidMediaData => TestUtils.InvalidMediaData;
         private Mock<IMediaRepository> _mockMediaRepo = new Mock<IMediaRepository>();
 
-        private Mock<Admin> _mockAdmin = new Mock<Admin>("admin", "admin", "Admin");
+        private Mock<Admin> _mockAdmin = new Mock<Admin>("mockadmin", "mockadmin@mail.com ", "Admin Mock");
         static MediaCreateDto testMediaCreate = new MediaCreateDto(
             MediaType.Audio,
             "test media",
@@ -46,25 +46,17 @@ namespace MediaPlayer.Tests.src.Service.Service
             Assert.Null(result);
         }
 
-        [Fact]
-        public void DeleteMediaById_WhenMediaFound_ShouldReturnTrue()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void DeleteMediaById_WhenMediaFound_ShouldReturnTrue(bool mediaFound)
         {
             _mockMediaRepo
                 .Setup(repo => repo.GetMediaById(It.IsAny<Guid>()))
-                .Returns(TestUtils.Media1);
+                .Returns(mediaFound?TestUtils.Media1:null);
             var mediaService = new MediaService(_mockMediaRepo.Object, _mockAdmin.Object);
             var result = mediaService.DeleteMediaById(Guid.NewGuid());
-            Assert.True(result);
-        }
-
-        [Fact]
-        public void DeleteMediaById_WhenMediaNotFound_ShouldReturnFalse()
-        {
-            Media? media = null;
-            _mockMediaRepo.Setup(repo => repo.GetMediaById(It.IsAny<Guid>())).Returns(media);
-            var mediaService = new MediaService(_mockMediaRepo.Object, _mockAdmin.Object);
-            var result = mediaService.DeleteMediaById(Guid.NewGuid());
-            Assert.False(result);
+            Assert.Equal(mediaFound,result);
         }
 
         [Fact]

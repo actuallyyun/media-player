@@ -9,33 +9,24 @@ namespace MediaPlayer.Tests.src.Service.Service
 {
     public class UserServiceTests
     {
+
+        public static IEnumerable<object[]> ValidUserCreateData =>
+            TestUtils.ValidUserCreateData;
         private Mock<IUserRepository> _mockUserRepo = new Mock<IUserRepository>();
 
         private Mock<Admin> _mockAdmin = new Mock<Admin>("admin", "admin", "Admin");
 
-        [Fact]
-        public void AddUser_WithValidUserCreateData_ShouldAddAndReturnUserType()
+        [Theory]
+        [MemberData(nameof(ValidUserCreateData))]
+        public void AddUser_WithValidUData_ShouldAddAndReturnCorrectUserType(UserCreateDto userCreate)
         {
             var testUserName = "test";
             User? userFound = null;
             _mockUserRepo.Setup(x => x.GetUserByName(testUserName)).Returns(userFound);
             var userService = new UserService(_mockUserRepo.Object, _mockAdmin.Object);
-            var result = userService.AddUser(TestUtils.UserCreate);
-            Assert.Equal(UserType.User, result.Type);
-            Assert.Equal(result.Username, TestUtils.UserCreate.Username);
-            _mockUserRepo.Verify(x => x.Add(It.IsAny<User>()), Times.Once());
-        }
-
-        [Fact]
-        public void AddUser_WithValidAdminCreateData_ShouldAddAndReturnAdminType()
-        {
-            var testUserName = "test";
-            User? userFound = null;
-            _mockUserRepo.Setup(x => x.GetUserByName(testUserName)).Returns(userFound);
-            var userService = new UserService(_mockUserRepo.Object, _mockAdmin.Object);
-            var result = userService.AddUser(TestUtils.AdminCreate);
-            Assert.Equal(UserType.Admin, result.Type);
-            Assert.Equal(result.Username, TestUtils.AdminCreate.Username);
+            var result = userService.AddUser(userCreate);
+            Assert.Equal(userCreate.Type, result.Type);
+            Assert.Equal(result.Username, userCreate.Username);
             _mockUserRepo.Verify(x => x.Add(It.IsAny<User>()), Times.Once());
         }
 

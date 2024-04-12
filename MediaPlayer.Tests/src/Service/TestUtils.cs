@@ -40,6 +40,12 @@ namespace MediaPlayer.Tests.src.Service
             "User",
             UserType.Admin
         );
+
+         public static IEnumerable<object[]> ValidUserCreateData =
+        [
+            new object[] { UserCreate },
+            new object[] { AdminCreate }
+        ];
         public static UserUpdateDto validUserUpdate = new UserUpdateDto("user1", null);
         public static UserUpdateDto invalidUserUpdate = new UserUpdateDto("usernoneexisting", null);
 
