@@ -23,18 +23,12 @@ namespace MediaPlayer.Tests.src.Service.Service
         public static IEnumerable<object[]> InvalidPlaylistAddByIdData =>
             TestUtils.InvalidPlaylistAddByIdData;
 
-        private  User _testUser=>TestUtils.User1;
         public PlayListServiceTests()
         {
             _mockAuthorizationService.Setup(x => x.IsAuthenticated).Returns(true);
             _mockAuthorizationService
                 .Setup(x => x.HasPermission(It.IsAny<UserType>()))
                 .Returns(true);
-            _mockAuthorizationService.Setup(x => x.GetUser()).Returns(_testUser);
-
-            _mockPlayListRepository
-                .Setup(r => r.GetPlaylistsByOwnerId(It.IsAny<Guid>()))
-                .Returns(TestUtils.User1Playlists);
 
             _mockPlayListRepository.Setup(r => r.Add(It.IsAny<PlayList>()));
             _mockPlayListRepository.Setup(r =>
@@ -63,12 +57,17 @@ namespace MediaPlayer.Tests.src.Service.Service
         [Fact]
         public void CreateNewPlaylist_WithValidData_ShouldCreateAndReturnPlayList()
         {
+            var user = new User("user", "user@mail.com", "User");
+            _mockPlayListRepository
+                .Setup(x => x.GetPlaylistsByOwnerId(It.IsAny<Guid>()))
+                .Returns(new PlayList[] { new PlayList(user.Id, "playlist1") });
+            _mockAuthorizationService.Setup(x => x.GetUser()).Returns(user);
+
             PlayListCreateDTO validPlaylistCreate = new PlayListCreateDTO(
-                _testUser.Id,
-                "playlist create",
+                user.Id,
+                "playlist2",
                 false
             );
-
             var playlistService = new PlayListService(
                 _mockPlayListRepository.Object,
                 _mockNotificationService.Object,
@@ -91,6 +90,11 @@ namespace MediaPlayer.Tests.src.Service.Service
             PlayListCreateDTO invalidData
         )
         {
+            var user = new User("user", "user@mail.com", "User");
+            _mockPlayListRepository
+                .Setup(x => x.GetPlaylistsByOwnerId(It.IsAny<Guid>()))
+                .Returns(new PlayList[] { new PlayList(user.Id, "playlist1") });
+            _mockAuthorizationService.Setup(x => x.GetUser()).Returns(user);
 
             var playlistService = new PlayListService(
                 _mockPlayListRepository.Object,
@@ -129,9 +133,11 @@ namespace MediaPlayer.Tests.src.Service.Service
         public void AddPlaylistById_WithInvalidData_ShouldNotAddAndReturnFalse(Guid id)
         {
             PlayList? playlist = null;
-            Media? media=null;
+            Media? media = null;
             _mockPlayListRepository.Setup(x => x.GetPlayListById(id)).Returns(playlist);
-            _mockPlayListRepository.Setup(x=>x.GetMediaInPlaylistById(It.IsAny<Guid>(),It.IsAny<Guid>())).Returns(media);
+            _mockPlayListRepository
+                .Setup(x => x.GetMediaInPlaylistById(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .Returns(media);
             var playlistService = new PlayListService(
                 _mockPlayListRepository.Object,
                 _mockNotificationService.Object,

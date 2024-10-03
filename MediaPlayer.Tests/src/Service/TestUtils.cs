@@ -2,7 +2,6 @@ using MediaPlayer.Core.src.Entity;
 using MediaPlayer.Core.src.Enums;
 using MediaPlayer.Service.src.DTO;
 using Microsoft.VisualBasic;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 
 namespace MediaPlayer.Tests.src.Service
 {
@@ -28,7 +27,6 @@ namespace MediaPlayer.Tests.src.Service
         public static Media Media1 => new Audio("audio1", "audio", 2000);
         public static Media Media2 => new Video("video", "audio", 2000);
         public static User User1 => new User("user", "user@mail.com", "User");
-        
         public static UserCreateDto UserCreate = new UserCreateDto(
             "user1",
             "user",
