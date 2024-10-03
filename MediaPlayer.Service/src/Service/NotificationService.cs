@@ -25,6 +25,7 @@ namespace MediaPlayer.Service.src.Service
         {
              foreach (var observer in _observers)
             {
+                Console.WriteLine(observer.ToString());
                 observer.Update(message);
             }
         }

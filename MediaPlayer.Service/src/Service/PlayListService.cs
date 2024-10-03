@@ -37,7 +37,6 @@ namespace MediaPlayer.Service.src.Service
             var userPlaylist = _playListRepository.GetPlaylistsByOwnerId(_user.Id);
             if (userPlaylist.FirstOrDefault(p => p.Name == playListCreate.Name) is not null)
             {
-                Console.WriteLine("2");
                 _notificationService.Notify(
                     "Cannot create playlist. Playlist with the same name already exists in your collection"
                 );
@@ -45,7 +44,6 @@ namespace MediaPlayer.Service.src.Service
 
             var playListFactory = new PlayListFactory();
             var newPlayList = playListFactory.Create(playListCreate);
-            Console.WriteLine($"new playlist:{newPlayList}");
             if (newPlayList is not null)
             {
                 _playListRepository.Add(newPlayList);
